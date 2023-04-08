@@ -6,6 +6,8 @@ This Python script is designed to automate the process of translating or transcr
 
 Python 3.7 or higher
 
+System Environment Variables: OPENAI_API_KEY = Please add your own API Key to the variables for "--type [1, 2]" to work.
+
 **Installation**
 
 Clone this repository: git clone https://github.com/TtesseractT/AI-Rosetta-Transcription-Translation
