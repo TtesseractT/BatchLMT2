@@ -7,8 +7,12 @@
 
 import subprocess
 import time
+import os
 
 ## More information found here: https://github.com/openai/whisper ##
+
+if not os.path.exists('Input-Videos'):
+    os.mkdir('Input-Videos')
 
 def run(command):
     while True:
