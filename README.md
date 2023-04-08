@@ -29,17 +29,17 @@ python Run.py --type <process-type>
 
 Replace <process-type> with the type of process you want to run (1 to 6). The available process types are:
 
-<process-type> - [1] Text to Audio Segments
+<process-type - [1]> Text to Audio Segments
   
-<process-type> - [2] Text to Audio Segments with Translation
+<process-type - [2]> Text to Audio Segments with Translation
   
-<process-type> - [3] Audio Translation (CPU)
+<process-type - [3]> Audio Translation (CPU)
   
-<process-type> - [4] Audio Translation (GPU)
+<process-type - [4]> Audio Translation (GPU)
   
-<process-type> - [5] Audio Transcription (CPU)
+<process-type - [5]> Audio Transcription (CPU)
   
-<process-type> - [6] Audio Transcription (GPU)
+<process-type - [6]> Audio Transcription (GPU)
 
 If you choose process types 3, 4, 5, or 6, you will be prompted to select a language and an output format.
 
