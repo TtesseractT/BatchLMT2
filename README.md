@@ -1,4 +1,4 @@
-# AI-Rosetta-Transcription---Translation
+# AI-Rosetta-Transcription-Translation [CPU & GPU Supported]
 
 This Python script is designed to automate the process of translating or transcribing audio files into different languages. This script uses the Whisper API to perform the translations and transcriptions.
 
