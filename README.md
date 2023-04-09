@@ -1,55 +1,43 @@
-# BatchWhisper-Transcription-Translation [CPU & GPU Supported]
+# BatchWhisper-Transcription-Translation (CPU & GPU Supported)
 
 This Python script is designed to automate the process of translating or transcribing audio files into different languages. This script uses the Whisper API to perform the translations and transcriptions.
 
-**Prerequisites**
+## Prerequisites
 
-Python 3.7 or higher
+- Python 3.7 or higher
+- System Environment Variables: OPENAI_API_KEY = Please add your API Key to the variables for "--type [1, 2]" to work.
 
-System Environment Variables: OPENAI_API_KEY = Please add your own API Key to the variables for "--type [1, 2]" to work.
+## Installation
 
-**Installation**
+1. Clone this repository: `git clone https://github.com/TtesseractT/AI-Rosetta-Transcription-Translation`
+2. Run the following script in the command line: `python Setup-Rosetta.py`
 
-Clone this repository: git clone https://github.com/TtesseractT/AI-Rosetta-Transcription-Translation
-
-Run the following script in command line:
-
-python Setup-Rosetta.py
-
-**Usage**
+## Usage
 
 Supported Languages:
 
-**Afrikaans,Albanian,Amharic,Arabic,Armenian,Assamese,Azerbaijani,Bashkir,Basque,Belarusian,Bengali,Bosnian,Breton,Bulgarian,Burmese,Castilian,Catalan,Chinese,Croatian,Czech,Danish,Dutch,English,Estonian,Faroese,Finnish,Flemish,French,Galician,Georgian,German,Greek,Gujarati,Haitian,Haitian,Creole,Hausa,Hawaiian,Hebrew,Hindi,Hungarian,Icelandic,Indonesian,Italian,Japanese,Javanese,Kannada,Kazakh,Khmer,Korean,Lao,Latin,Latvian,Letzeburgesch,Lingala,Lithuanian,Luxembourgish,Macedonian,Malagasy,Malay,Malayalam,Maltese,Maori,Marathi,Moldavian,Moldovan,Mongolian,Myanmar,Nepali,Norwegian,Nynorsk,Occitan,Panjabi,Pashto,Persian,Polish,Portuguese,Punjabi,Pushto,Romanian,Russian,Sanskrit,Serbian,Shona,Sindhi,Sinhala,Sinhalese,Slovak,Slovenian,Somali,Spanish,Sundanese,Swahili,Swedish,Tagalog,Tajik,Tamil,Tatar,Telugu,Thai,Tibetan,Turkish,Turkmen,Ukrainian,Urdu,Uzbek,Valencian,Vietnamese,Welsh,Yiddish,Yoruba**
+>Afrikaans,Albanian,Amharic,Arabic,Armenian,Assamese,Azerbaijani,Bashkir,Basque,Belarusian,Bengali,Bosnian,Breton,Bulgarian,Burmese,Castilian,Catalan,Chinese,Croatian,Czech,Danish,Dutch,English,Estonian,Faroese,Finnish,Flemish,French,Galician,Georgian,German,Greek,Gujarati,Haitian,Haitian,Creole,Hausa,Hawaiian,Hebrew,Hindi,Hungarian,Icelandic,Indonesian,Italian,Japanese,Javanese,Kannada,Kazakh,Khmer,Korean,Lao,Latin,Latvian,Letzeburgesch,Lingala,Lithuanian,Luxembourgish,Macedonian,Malagasy,Malay,Malayalam,Maltese,Maori,Marathi,Moldavian,Moldovan,Mongolian,Myanmar,Nepali,Norwegian,Nynorsk,Occitan,Panjabi,Pashto,Persian,Polish,Portuguese,Punjabi,Pushto,Romanian,Russian,Sanskrit,Serbian,Shona,Sindhi,Sinhala,Sinhalese,Slovak,Slovenian,Somali,Spanish,Sundanese,Swahili,Swedish,Tagalog,Tajik,Tamil,Tatar,Telugu,Thai,Tibetan,Turkish,Turkmen,Ukrainian,Urdu,Uzbek,Valencian,Vietnamese,Welsh,Yiddish,Yoruba
 
 To use this script, follow these steps:
 
-1.  Place your audio files in the Input-Videos directory.
-2.  Run the script using the following command:
+1. Place your audio files in the `Input-Videos` directory.
+2. Run the script using the following command: `python Run.py --type <process-type>`
 
-CMD Line:
+Replace `<process-type>` with the type of process you want to run (1 to 6). The available process types are:
 
-python Run.py --type <process-type>
-
-Replace <process-type> with the type of process you want to run (1 to 6). The available process types are:
-
-<process-type - [1]> Text to Audio Segments
-  
-<process-type - [2]> Text to Audio Segments with Translation
-  
-<process-type - [3]> Audio Translation (CPU)
-  
-<process-type - [4]> Audio Translation (GPU)
-  
-<process-type - [5]> Audio Transcription (CPU)
-  
-<process-type - [6]> Audio Transcription (GPU)
+- `<process-type - [1]>` Text to Audio Segments
+- `<process-type - [2]>` Text to Audio Segments with Translation
+- `<process-type - [3]>` Audio Translation (CPU)
+- `<process-type - [4]>` Audio Translation (GPU)
+- `<process-type - [5]>` Audio Transcription (CPU)
+- `<process-type - [6]>` Audio Transcription (GPU)
 
 If you choose process types 3, 4, 5, or 6, you will be prompted to select a language and an output format.
 
-The output files will be saved in the Videos directory.
+The output files will be saved in the `Videos` directory.
 
-**USAGES FOR WHISPER DEVELOPER BACKEND**
+
+## USAGES FOR WHISPER DEVELOPER BACKEND*
 
 usage: whisper [-h] 
 
@@ -101,10 +89,25 @@ usage: whisper [-h]
 
 [--threads THREADS]
 
-**License**
-  
-This project is licensed under the terms of the MIT license. See LICENSE for more information.
+## Input / Output structure
 
-**Author**
-  
+| EXPECTED INPUT - [ROOT DIR] |               | EXPECTED OUTPUT - [ROOT DIR] |                  |
+|-----------------------------|---------------|------------------------------|------------------|
+| Folder                      | File          | Folder                       | File             |
+| Input-Videos                |               | Videos                       |                  |
+|                             | Video 1       | Video -1                     |                  |
+|                             | Video 2       |                              | Video 1 - File   |
+|                             | Video 3       |                              | Transcription File|
+|                             | Video 4       |                              | Audio Segment - File|
+|                             | ...           | Video -2                     |                  |
+|                             | Video [N]     |                              | Video 2 - File   |
+|                             |               |                              | Transcription File|
+|                             |               |                              | Audio Segment - File|
+
+## License
+
+This project is licensed under the terms of the MIT license. See `LICENSE` for more information.
+
+## Author
+
 Built by Sabian Hibbs.
