@@ -49,6 +49,58 @@ If you choose process types 3, 4, 5, or 6, you will be prompted to select a lang
 
 The output files will be saved in the Videos directory.
 
+**USAGES FOR WHISPER DEVELOPER BACKEND**
+
+usage: whisper [-h] 
+
+[--model {tiny.en,tiny,base.en,base,small.en,small,medium.en,medium,large-v1,large-v2,large}]
+
+[--model_dir MODEL_DIR] 
+
+[--device DEVICE] 
+
+[--output_dir OUTPUT_DIR]
+
+[--output_format {txt,vtt,srt,tsv,json,all}] 
+
+[--verbose VERBOSE] 
+
+[--task {transcribe,translate}]
+
+[--temperature TEMPERATURE] 
+
+[--best_of BEST_OF] 
+
+[--beam_size BEAM_SIZE] 
+
+[--patience PATIENCE]
+
+[--length_penalty LENGTH_PENALTY] 
+
+[--suppress_tokens SUPPRESS_TOKENS] 
+
+[--initial_prompt INITIAL_PROMPT]
+
+[--condition_on_previous_text CONDITION_ON_PREVIOUS_TEXT] 
+
+[--fp16 FP16]
+
+[--temperature_increment_on_fallback TEMPERATURE_INCREMENT_ON_FALLBACK]
+
+[--compression_ratio_threshold COMPRESSION_RATIO_THRESHOLD] 
+
+[--logprob_threshold LOGPROB_THRESHOLD]
+
+[--no_speech_threshold NO_SPEECH_THRESHOLD] 
+
+[--word_timestamps WORD_TIMESTAMPS]
+
+[--prepend_punctuations PREPEND_PUNCTUATIONS] 
+
+[--append_punctuations APPEND_PUNCTUATIONS]
+
+[--threads THREADS]
+
 **License**
   
 This project is licensed under the terms of the MIT license. See LICENSE for more information.
