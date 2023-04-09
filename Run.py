@@ -71,13 +71,13 @@ while num_files > 0:
     elif args.type == 2:
         subprocess.run(['python', 'Text_AudioSegments_Translate.py', file_to_process])
     elif args.type == 3:
-        subprocess.run(f'whisper "{output_file}" --device cpu --model large --language {language} --task transcribe --output_format {out_format}' , shell=True)
+        subprocess.run(f'whisper "{output_file}" --device cpu --model large --language {language} --task translate --output_format {out_format}' , shell=True)
     elif args.type == 4:
         subprocess.run(f'whisper "{output_file}" --device cuda --model large --language {language} --task translate --output_format {out_format}', shell=True)
     elif args.type == 5:
         subprocess.run(f'whisper "{output_file}" --device cpu --model large --language {language} --task transcribe --output_format {out_format}', shell=True)
     elif args.type == 6:
-        subprocess.run(f'whisper "{output_file}" --device cuda --model large --language {language} --task translate --output_format {out_format}', shell=True)
+        subprocess.run(f'whisper "{output_file}" --device cuda --model large --language {language} --task transcribe --output_format {out_format}', shell=True)
     
     os.mkdir(os.path.join('Videos', video_folder_name))
     shutil.move(file_to_process, os.path.join('Videos', video_folder_name))
