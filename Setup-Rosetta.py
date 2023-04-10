@@ -39,3 +39,6 @@ run("pip install openai")
 
 # Install setuptools-rust
 run("pip install setuptools-rust")
+
+# Install torch for CUDA
+run("pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117")
