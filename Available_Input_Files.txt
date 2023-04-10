@@ -1,0 +1,38 @@
+# Here is a list of all available input_file formats
+
+3GP - Mobile Phone Video
+AAC - Advanced Audio Codec
+AC3 - Audio Codec 3
+AIF, AIFF - Audio Interchange File Format
+AMR - Adaptive Multi-Rate Audio Codec
+APE - Monkey's Audio Format
+ASF - Advanced Streaming Format
+AVI - Audio Video Interleaved Format
+CAF - Core Audio Format
+DTS - Digital Theater Systems Audio
+FLAC - Free Lossless Audio Codec
+M4A, M4B - MPEG-4 Audio Layer
+MIDI - Musical Instrument Digital Interface
+MKV - Matroska Multimedia Container
+MOV - Apple QuickTime Movie
+MP4 - MPEG-4 Part 14 Container
+MPEG - Moving Picture Experts Group Video
+OGA, OGG - Ogg Vorbis Audio
+RA - RealAudio
+RM - RealMedia
+WAV - Waveform Audio Format
+WebM - Web Media Format
+WMA - Windows Media Audio
+WV - WavPack Audio Format
+AVCHD - Advanced Video Codec High Definition
+DV - Digital Video Format
+FLV - Flash Video Format
+M2TS, MTS - MPEG-2 Transport Stream
+MJPEG - Motion JPEG Video Format
+MPEG-1 - Moving Picture Experts Group Video
+MPEG-2 - Moving Picture Experts Group Video
+MPEG-4 - Moving Picture Experts Group Video
+RMVB - RealMedia Variable Bitrate Format
+SWF - Shockwave Flash Movie
+VOB - DVD Video Object
+WMV - Windows Media Video
