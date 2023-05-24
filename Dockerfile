@@ -1,3 +1,11 @@
+#-------------------------------------------------------------------#
+# BatchWhisper-Transcription-Translation [LOCAL & API]              #
+#-------------------------------------------------------------------#
+# Author: SABIAN HIBBS                                              #
+# License: MIT                                                      #
+# Version: 3.34                                                     #
+#-------------------------------------------------------------------#
+
 # Use an official Python runtime as a parent image
 FROM python:3.9-buster
 

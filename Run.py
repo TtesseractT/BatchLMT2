@@ -1,9 +1,10 @@
-#######################################################
-# Rosetta v1 Python Script - Created on 08/04/2023    #
-#######################################################
-# Built by Sabian Hibbs                               #
-# MIT LICENCE                                         #
-#######################################################
+#-------------------------------------------------------------------#
+# BatchWhisper-Transcription-Translation [LOCAL & API]              #
+#-------------------------------------------------------------------#
+# Author: SABIAN HIBBS                                              #
+# License: MIT                                                      #
+# Version: 3.34                                                     #
+#-------------------------------------------------------------------#
 
 import os
 import shutil
@@ -12,12 +13,15 @@ import argparse
 import language_dict
 import output_format_type
 
+# Create an argument parser and provide a description for the argument
 parser = argparse.ArgumentParser(description="Choose the type of process to run.")
 parser.add_argument('--type', type=int, choices=range(1, 7), required=True, help="Type of process to run (1 to 6)")
 args = parser.parse_args()
 
-if args.type in [3,4,5,6]:
+# Ask for the language input if the process type requires it
+if args.type in [3, 4, 5, 6]:
     print("Available languages:", language_dict.available_languages)
+
     # Loop until a valid language is selected
     while True:
         print("---------------------------")
@@ -29,9 +33,10 @@ if args.type in [3,4,5,6]:
         else:
             print("Unknown language:", full_language_name)
 
-if args.type in [3,4,5,6]:
+# Ask for the output format if the process type requires it
+if args.type in [3, 4, 5, 6]:
     print("Available Output Formats:", output_format_type.available_op_format)
-        
+
     while True:
         print("---------------------------")
         output_file_t = input("Enter the output format: ")
@@ -60,28 +65,41 @@ while num_files > 0:
     shutil.move(os.path.join('Input-Videos', file_to_process), file_to_process)
     file_extension = os.path.splitext(file_to_process)[-1].lower()
     valid_audio_file = file_extension in ['.mp3', '.wav']
+
+    # Convert non-audio files to WAV format if necessary
     if not valid_audio_file and args.type in [3, 4, 5, 6]:
         output_file = f'{os.path.splitext(file_to_process)[0]}.wav'
         subprocess.run(['ffmpeg', '-i', file_to_process, '-acodec', 'pcm_s16le', '-ar', '44100', output_file])
         converted_file = output_file
+
     os.chdir(root_directory)
 
+    # Run the specified process based on the process type
     if args.type == 1:
         subprocess.run(['python', 'Text_AudioSegments.py', file_to_process])
     elif args.type == 2:
         subprocess.run(['python', 'Text_AudioSegments_Translate.py', file_to_process])
     elif args.type == 3:
-        subprocess.run(f'whisper "{output_file}" --device cpu --model large --language {language} --task translate --output_format {out_format}' , shell=True)
+        subprocess.run(
+            f'whisper "{output_file}" --device cpu --model large --language {language} --task translate --output_format {out_format}',
+            shell=True)
     elif args.type == 4:
-        subprocess.run(f'whisper "{output_file}" --device cuda --model large --language {language} --task translate --output_format {out_format}', shell=True)
+        subprocess.run(
+            f'whisper "{output_file}" --device cuda --model large --language {language} --task translate --output_format {out_format}',
+            shell=True)
     elif args.type == 5:
-        subprocess.run(f'whisper "{output_file}" --device cpu --model large --language {language} --task transcribe --output_format {out_format}', shell=True)
+        subprocess.run(
+            f'whisper "{output_file}" --device cpu --model large --language {language} --task transcribe --output_format {out_format}',
+            shell=True)
     elif args.type == 6:
-        subprocess.run(f'whisper "{output_file}" --device cuda --model large --language {language} --task transcribe --output_format {out_format}', shell=True)
-    
+        subprocess.run(
+            f'whisper "{output_file}" --device cuda --model large --language {language} --task transcribe --output_format {out_format}',
+            shell=True)
+
+    # Create a new directory for the processed video and move the files
     os.mkdir(os.path.join('Videos', video_folder_name))
     shutil.move(file_to_process, os.path.join('Videos', video_folder_name))
-    
+
     if args.type in [3, 4, 5, 6]:
         output_file_base = os.path.splitext(output_file)[0]
         output_file_txt = f'{output_file_base}.{out_format}'
@@ -91,12 +109,14 @@ while num_files > 0:
     if args.type in [1, 2]:
         shutil.move('transcripts.txt', os.path.join('Videos', video_folder_name))
         shutil.move('Audio_Segment', os.path.join('Videos', video_folder_name))
-    
+
     num_files -= 1
     i += 1
 
 cwd = os.getcwd()
 directory = os.path.join(cwd, "Videos")
+
+# Clean up the temporary files and directories
 for subdir in os.listdir(directory):
     subdir_path = os.path.join(directory, subdir)
-subprocess.run(['python', 'CleanUp.py'])
+    subprocess.run(['python', 'CleanUp.py'])

@@ -1,3 +1,11 @@
+#-------------------------------------------------------------------#
+# BatchWhisper-Transcription-Translation [LOCAL & API]              #
+#-------------------------------------------------------------------#
+# Author: SABIAN HIBBS                                              #
+# License: MIT                                                      #
+# Version: 3.34                                                     #
+#-------------------------------------------------------------------#
+
 # Here is a list of all available input_file formats
 
 3GP - Mobile Phone Video
