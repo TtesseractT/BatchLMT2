@@ -5,7 +5,8 @@ This Python script is designed to automate the process of translating or transcr
 ## Prerequisites
 
 - Python 3.8 or higher
-- System Environment Variables: OPENAI_API_KEY = Please add your API Key to the variables for "--type [1, 2]" to work.
+- Works With Device or through API
+- If you are going to use the API Please use the System Environment Variables: OPENAI_API_KEY for the `API KEY`.
 
 ## Installation
 
