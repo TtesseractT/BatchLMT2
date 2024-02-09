@@ -14,6 +14,15 @@ This Python script is designed to automate the process of translating or transcr
 3. Run the following script in the command line: `python Setup-Rosetta.py`
 4. Run `python Run.py --type {LOOK BELOW FOR CORRECT INT TO USE}`
 
+| Argument | Description |
+| --- | --- |
+| --type 1 | Text to Audio Segments |
+| --type 2 | Text to Audio Segments with Translation |
+| --type 3 | Audio Translation (CPU) |
+| --type 4 | Audio Translation (GPU) |
+| --type 5 | Audio Transcription (CPU) |
+| --type 6 | Audio Transcription (GPU) |
+
 ## Usage
 
 **Supported Input File Types:**
