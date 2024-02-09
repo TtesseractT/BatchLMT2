@@ -3,10 +3,11 @@
 #-------------------------------------------------------------------#
 # Author: SABIAN HIBBS                                              #
 # License: MIT                                                      #
-# Version: 3.34                                                     #
+# Version: 3.4                                                      #
 #-------------------------------------------------------------------#
 
 import os
+
 
 # Define the path to the 'Videos' folder
 videos_folder = "./Videos"
@@ -24,3 +25,4 @@ for subdir in os.listdir(videos_folder):
     # Rename the subdirectory to the name of the largest file
     new_name = os.path.splitext(largest_file)[0]  # Remove the file extension
     os.rename(subdir_path, os.path.join(videos_folder, new_name))
+    
