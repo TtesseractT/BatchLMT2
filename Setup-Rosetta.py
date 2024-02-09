@@ -7,39 +7,37 @@
 #-------------------------------------------------------------------#
 
 import subprocess
-import time
 import os
 
-## More information found here: https://github.com/openai/whisper ##
+if __name__ == "__main__":
+    # Upgrade openai-whisper
+    print("Installing/upgrading openai-whisper...")
+    subprocess.run("pip install -U openai-whisper")
 
-if not os.path.exists('Input-Videos'):
-    os.mkdir('Input-Videos')
+    # Install whisper from GitHub
+    print("Installing whisper from GitHub...")
+    subprocess.run("pip install git+https://github.com/openai/whisper.git")
 
-def run(command):
-    while True:
-        result = subprocess.run(command, shell=True)
-        if result.returncode == 0:
-            return
-        print(f"Command '{command}' failed. Retrying in 10 seconds...")
-        time.sleep(10)
+    # Upgrade whisper from GitHub
+    print("Upgrading whisper from GitHub...")
+    subprocess.run("pip install --upgrade --no-deps --force-reinstall git+https://github.com/openai/whisper.git")
 
-# Upgrade openai-whisper
-run("pip install -U openai-whisper")
+    # Install ffmpeg
+    print("Installing ffmpeg...")
+    subprocess.run("pip install ffmpeg")
 
-# Install whisper from GitHub
-run("pip install git+https://github.com/openai/whisper.git")
+    # Install openai
+    print("Installing openai...")
+    subprocess.run("pip install openai")
 
-# Upgrade whisper from GitHub
-run("pip install --upgrade --no-deps --force-reinstall git+https://github.com/openai/whisper.git")
+    # Install setuptools-rust
+    print("Installing setuptools-rust...")
+    subprocess.run("pip install setuptools-rust")
 
-# Install ffmpeg
-run("pip install ffmpeg")
+    # Install torch for CUDA
+    print("Installing torch, torchvision, and torchaudio...")
+    subprocess.run("pip install torch torchvision torchaudio")
 
-# Install openai
-run("pip install openai")
-
-# Install setuptools-rust
-run("pip install setuptools-rust")
-
-# Install torch for CUDA
-run("pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117")
+    # Create the directories if they don't exist
+    if not os.path.exists('Input-Videos'):
+        os.mkdir('Input-Videos')
