@@ -1,10 +1,13 @@
+import shutil
+import py7zr
 import subprocess
+import requests
 import os
 
 filename = "cuda_11.8.0_522.06_windows"
 url = "https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_522.06_windows.exe"
-filename_ffmpeg = ""
-url_ffmpeg = ""
+filename_ffmpeg = "ffmpeg"
+url_ffmpeg = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z"
 
 # This code will install all dependancies based on the current needs of the user:
 def create_and_activate_conda_env(env_name="Batch_Env", python_version="3.10"):
@@ -20,41 +23,58 @@ def create_and_activate_conda_env(env_name="Batch_Env", python_version="3.10"):
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
 
-def download_cuda_file_w10(url: str, filename: str) -> None:
+def download_cuda_file_w10(url: str, filename: str, download_dir: str) -> None:
     """Downloads a file from the specified URL and
     then opens it using the default application."""
+    # Ensure the download directory exists
+    os.makedirs(download_dir, exist_ok=True)
+    
     response = requests.get(url)
-    with open(filename, 'wb') as file:
+    with open(os.path.join(download_dir, filename), 'wb') as file:
         file.write(response.content)
-    # download_cuda_file_w10(url, filename)
+
     # Open the downloaded file using the default application
-    subprocess.Popen([filename], shell=True)
+    subprocess.Popen([os.path.join(download_dir, filename)], shell=True)
 
 # TODO: Find the directory path and bin locations for the shutil move to "os.getcwd()"
 def download_ffmpeg_file(url_ffmpeg: str, filename_ffmpeg: str) -> None:
     """Downloads a file from the specified URL
     Extracts file, and moves bin files to current directory."""
-    response = requests.get(url)
-    with open(filename, 'wb') as file:
+    response = requests.get(url_ffmpeg)
+    with open(filename_ffmpeg, 'wb') as file:
         file.write(response.content)
+    
+    # Extract the 7z file
+    with py7zr.SevenZipFile(filename_ffmpeg, mode='r') as z:
+        z.extractall()
+    
+    # Move all .exe binaries from the bin folder to the current directory
+    for file in os.listdir(os.path.join(filename_ffmpeg, 'bin')):
+        if file.endswith('.exe'):
+            shutil.move(os.path.join(filename_ffmpeg, 'bin', file), os.getcwd())
 
 
-if __name__ == __main__:
+if __name__ == "__main__":
     print("Running Blanket Install for Windows 10")
 
-    ## """Conda Installation"""
+    """Conda Installation"""
     create_and_activate_conda_env()
 
-    ## """Cuda 11.8 Installation"""
+    """Cuda 11.8 Installation"""
     print("Attempting to install Cuda 11.8")
-    subprocess.run("pip", "install", "requests")
-    download_cuda_file_w10(url, filename)
+    subprocess.run(["pip", "install", "requests"])
+    download_dir = os.getcwd()  # or any other directory
+    download_cuda_file_w10(url, filename, download_dir)
 
-    input("Please type Y only when you have installed CUDA TOOLKIT: ", user_accepted)
-    if user_accepted == "Y" or "y":
+    user_accepted = input("Please type Y only when you have installed CUDA TOOLKIT: ")
+    if user_accepted.lower() == "y":
         print("CUDA TOOLKIT Defined as Installed")
+        print("Gathering dependancies and installing them")
+
+        subprocess.run(["pip", "install", "py7zr"])
+
         # Download ffmpeg to the directory using the function:
-        # download_ffmpeg_file()
+        download_ffmpeg_file()
 
         # Upgrade openai-whisper
         print("Installing/upgrading openai-whisper...")
@@ -87,5 +107,5 @@ if __name__ == __main__:
         # Create the directories if they don't exist
         if not os.path.exists('Input-Videos'):
             os.mkdir('Input-Videos')
-
+    
 #
