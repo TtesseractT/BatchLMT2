@@ -16,6 +16,14 @@ import output_format_type
 # Create an argument parser and provide a description for the argument
 parser = argparse.ArgumentParser(description="Choose the type of process to run.")
 parser.add_argument('--type', type=int, choices=range(1, 7), required=True, help="Type of process to run (1 to 6)")
+parser.add_argument('--info', type=str, required=False, help="""
+Process Types linked to --type variable
+--type 1    |   Text to Audio Segments
+--type 2    |   Text to Audio Segments with Translation
+--type 3    |   Audio Translation (CPU)
+--type 4    |   Audio Translation (GPU)
+--type 5    |   Audio Transcription (CPU)
+--type 6    |   Audio Transcription (GPU)""")
 args = parser.parse_args()
 
 # Ask for the language input if the process type requires it
