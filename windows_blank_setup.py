@@ -11,10 +11,9 @@ url_ffmpeg = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z"
 
 # This code will install all dependancies based on the current needs of the user:
 def create_and_activate_conda_env(env_name="Batch_Env", python_version="3.10"):
-    """Installs Miniconda, creates a new conda environment with the specified Python version,
+    """Installs conda, creates a new conda environment with the specified Python version,
        activates it, and changes the working directory to the environment's root."""
     try:
-        subprocess.run(["conda", "install", "miniconda", "-y"], check=True)
         subprocess.run(["conda", "create", "-n", env_name, f"python={python_version}", "-y"], check=True)
         subprocess.run(["conda", "activate", env_name], check=True, shell=True)
         os.chdir(os.environ["CONDA_PREFIX"])
@@ -56,8 +55,40 @@ def download_ffmpeg_file(url_ffmpeg: str, filename_ffmpeg: str) -> None:
 if __name__ == "__main__":
     print("Running Blanket Install for Windows 10")
 
-    """Conda Installation"""
-    create_and_activate_conda_env()
+    # ------------------------------------------------------------------------------------------
+    """ This part of the code makes sure that the conda runtime is installed 
+    and once installed the code will create an environment needed for the 
+    package manager to install all prerecs:
+    
+    Packages:
+        <Conda>
+            <Python 3.10>
+
+    """
+
+    user_accepted_confirm = input("""
+    Please Install the following software before continuing:
+    
+    Anaconda: 
+    Download Link - https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Windows-x86_64.exe
+    
+    Once installed close this terminal and launch Anaconda terminal via start menu.
+                                  
+    If this is the Conda Terminal you will see this-- (Base) at the start of your CLI.
+                                  
+    Please type 'confirm' if this is true.
+    Response: """)
+    if user_accepted_confirm.lower() == "confirm":
+        try:
+            subprocess.run(["conda", "--version"])
+            print("Anaconda (Conda) is already installed.")
+
+        except subprocess.CalledProcessError:
+            print("Anaconda (Conda) is not installed.\n Installing now")
+            create_and_activate_conda_env()
+            print("Conda installed, Moving on")
+
+    # ------------------------------------------------------------------------------------------
 
     """Cuda 11.8 Installation"""
     print("Attempting to install Cuda 11.8")
@@ -87,10 +118,6 @@ if __name__ == "__main__":
         print("Upgrading whisper from GitHub...")
         subprocess.run("pip install --upgrade --no-deps --force-reinstall git+https://github.com/openai/whisper.git")
 
-        # Install ffmpeg for python
-        print("Installing ffmpeg...")
-        subprocess.run("pip install ffmpeg")
-
         # Install openai
         print("Installing openai...")
         subprocess.run("pip install openai")
@@ -106,5 +133,5 @@ if __name__ == "__main__":
         # Create the directories if they don't exist
         if not os.path.exists('Input-Videos'):
             os.mkdir('Input-Videos')
-    
+            #
 #
