@@ -96,42 +96,42 @@ if __name__ == "__main__":
     download_dir = os.getcwd()  # or any other directory
     download_cuda_file_w10(url, filename, download_dir)
 
-    user_accepted = input("Please type Y only when you have installed CUDA TOOLKIT: ")
+    user_accepted = input("Please type Y only when you have installed 'CUDA TOOLKIT': ")
     if user_accepted.lower() == "y":
         print("CUDA TOOLKIT Defined as Installed")
-        print("Gathering dependancies and installing them")
 
-        subprocess.run(["pip", "install", "py7zr"])
+    print("Gathering dependancies and installing them")
+    subprocess.run(["pip", "install", "py7zr"])
 
-        # Download ffmpeg to the directory using the function:
-        download_ffmpeg_file()
+    # Download ffmpeg to the directory using the function:
+    download_ffmpeg_file()
 
-        # Upgrade openai-whisper
-        print("Installing/upgrading openai-whisper...")
-        subprocess.run("pip install -U openai-whisper")
+    # Upgrade openai-whisper
+    print("Installing/upgrading openai-whisper...")
+    subprocess.run(["pip", "install", "-U", "openai-whisper"])
 
-        # Install whisper from GitHub
-        print("Installing whisper from GitHub...")
-        subprocess.run("pip install git+https://github.com/openai/whisper.git")
+    # Install whisper from GitHub
+    print("Installing whisper from GitHub...")
+    subprocess.run(["pip", "install", "git+https://github.com/openai/whisper.git"])
 
-        # Upgrade whisper from GitHub
-        print("Upgrading whisper from GitHub...")
-        subprocess.run("pip install --upgrade --no-deps --force-reinstall git+https://github.com/openai/whisper.git")
+    # Upgrade whisper from GitHub
+    print("Upgrading whisper from GitHub...")
+    subprocess.run(["pip", "install", "--upgrade", "--no-deps", "--force-reinstall", "git+https://github.com/openai/whisper.git"])
 
-        # Install openai
-        print("Installing openai...")
-        subprocess.run("pip install openai")
+    # Install openai
+    print("Installing openai...")
+    subprocess.run(["pip", "install", "openai"])
 
-        # Install setuptools-rust
-        print("Installing setuptools-rust...")
-        subprocess.run("pip install setuptools-rust")
+    # Install setuptools-rust
+    print("Installing setuptools-rust...")
+    subprocess.run(["pip", "install", "setuptools-rust"])
 
-        # Install torch for CUDA
-        print("Installing torch, torchvision, and torchaudio...")
-        subprocess.run("pip install torch torchvision torchaudio")
-        
-        # Create the directories if they don't exist
-        if not os.path.exists('Input-Videos'):
-            os.mkdir('Input-Videos')
+    # Install torch for CUDA
+    print("Installing torch, torchvision, and torchaudio...")
+    subprocess.run(["pip", "install", "torch", "torchvision", "torchaudio"])
+    
+    # Create the directories if they don't exist
+    if not os.path.exists('Input-Videos'):
+        os.mkdir('Input-Videos')
             #
 #

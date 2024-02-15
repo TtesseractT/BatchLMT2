@@ -108,8 +108,44 @@ while num_files > 0:
         subprocess.run(
             f'whisper "{output_file}" --device cuda --model large --language {language} --task transcribe --output_format {out_format}',
             shell=True)
+        
+    try:
+        # Create a new directory for the processed video and move the files
+        os.mkdir(os.path.join('Videos', video_folder_name))
+        shutil.move(file_to_process, os.path.join('Videos', video_folder_name))
 
-    # Create a new directory for the processed video and move the files
+        if args.type in [3, 4, 5, 6]:
+            output_file_base = os.path.splitext(output_file)[0]
+            output_file_txt = f'{output_file_base}.{out_format}'
+            shutil.move(output_file_txt, os.path.join('Videos', video_folder_name, output_file_txt))
+            shutil.move(output_file, os.path.join('Videos', video_folder_name))
+
+        if args.type in [1, 2]:
+            shutil.move('transcripts.txt', os.path.join('Videos', video_folder_name))
+            shutil.move('Audio_Segment', os.path.join('Videos', video_folder_name))
+
+        num_files -= 1
+        i += 1
+
+    except Exception as e:
+        print(f"Processing failed with error: {e}")
+        print("Reversing the file operations...")
+
+        # Move the files back to their original locations
+        shutil.move(os.path.join('Videos', video_folder_name, file_to_process), '.')
+        if args.type in [3, 4, 5, 6]:
+            shutil.move(os.path.join('Videos', video_folder_name, output_file_txt), '.')
+            shutil.move(os.path.join('Videos', video_folder_name, output_file), '.')
+        if args.type in [1, 2]:
+            shutil.move(os.path.join('Videos', video_folder_name, 'transcripts.txt'), '.')
+            shutil.move(os.path.join('Videos', video_folder_name, 'Audio_Segment'), '.')
+
+        # Delete the (file_to_process).wav file
+        os.remove(f'{file_to_process}.wav')
+        print("File operations reversed.")
+
+#legacy code here for any issues reinstate:
+    """# Create a new directory for the processed video and move the files
     os.mkdir(os.path.join('Videos', video_folder_name))
     shutil.move(file_to_process, os.path.join('Videos', video_folder_name))
 
@@ -124,7 +160,7 @@ while num_files > 0:
         shutil.move('Audio_Segment', os.path.join('Videos', video_folder_name))
 
     num_files -= 1
-    i += 1
+    i += 1"""
 
 cwd = os.getcwd()
 directory = os.path.join(cwd, "Videos")
