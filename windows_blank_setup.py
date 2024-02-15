@@ -36,7 +36,6 @@ def download_cuda_file_w10(url: str, filename: str, download_dir: str) -> None:
     # Open the downloaded file using the default application
     subprocess.Popen([os.path.join(download_dir, filename)], shell=True)
 
-# TODO: Find the directory path and bin locations for the shutil move to "os.getcwd()"
 def download_ffmpeg_file(url_ffmpeg: str, filename_ffmpeg: str) -> None:
     """Downloads a file from the specified URL
     Extracts file, and moves bin files to current directory."""
