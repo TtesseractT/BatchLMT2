@@ -77,7 +77,7 @@ while num_files > 0:
     # Convert non-audio files to WAV format if necessary
     if not valid_audio_file and args.type in [3, 4, 5, 6]:
         output_file = f'{os.path.splitext(file_to_process)[0]}.wav'
-        subprocess.run(['ffmpeg',"-loglevel", "error", "-stats", "-i", file_to_process, '-acodec', 'pcm_s16le', '-ar', '44100', output_file])
+        subprocess.run(['ffmpeg','-loglevel', 'error', '-stats', '-i', file_to_process, '-acodec', 'pcm_s16le', '-ar', '44100', output_file])
         converted_file = output_file
 
     os.chdir(root_directory)
