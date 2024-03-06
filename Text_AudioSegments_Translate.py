@@ -3,7 +3,7 @@
 #-------------------------------------------------------------------#
 # Author: SABIAN HIBBS                                              #
 # License: MIT                                                      #
-# Version: 3.34                                                     #
+# Version: 3.4                                                      #
 #-------------------------------------------------------------------#
 
 import os
@@ -11,6 +11,7 @@ import sys
 import subprocess
 import math
 import openai
+
 
 # Set OpenAI API key
 openai.api_key = os.environ.get("OPENAI_API_KEY")

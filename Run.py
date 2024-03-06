@@ -3,7 +3,7 @@
 #-------------------------------------------------------------------#
 # Author: SABIAN HIBBS                                              #
 # License: MIT                                                      #
-# Version: 3.34                                                     #
+# Version: 3.4                                                      #
 #-------------------------------------------------------------------#
 
 import os
@@ -16,6 +16,14 @@ import output_format_type
 # Create an argument parser and provide a description for the argument
 parser = argparse.ArgumentParser(description="Choose the type of process to run.")
 parser.add_argument('--type', type=int, choices=range(1, 7), required=True, help="Type of process to run (1 to 6)")
+parser.add_argument('--info', type=str, required=False, help="""
+Process Types linked to --type variable
+--type 1    |   Text to Audio Segments
+--type 2    |   Text to Audio Segments with Translation
+--type 3    |   Audio Translation (CPU)
+--type 4    |   Audio Translation (GPU)
+--type 5    |   Audio Transcription (CPU)
+--type 6    |   Audio Transcription (GPU)""")
 args = parser.parse_args()
 
 # Ask for the language input if the process type requires it
@@ -69,7 +77,7 @@ while num_files > 0:
     # Convert non-audio files to WAV format if necessary
     if not valid_audio_file and args.type in [3, 4, 5, 6]:
         output_file = f'{os.path.splitext(file_to_process)[0]}.wav'
-        subprocess.run(['ffmpeg',"-loglevel", "error", "-stats", "-i", file_to_process, '-acodec', 'pcm_s16le', '-ar', '44100', output_file])
+        subprocess.run(['ffmpeg','-loglevel', 'error', '-stats', '-i', file_to_process, '-acodec', 'pcm_s16le', '-ar', '44100', output_file])
         converted_file = output_file
 
     os.chdir(root_directory)
@@ -100,8 +108,44 @@ while num_files > 0:
         subprocess.run(
             f'whisper "{output_file}" --device cuda --model large --language {language} --task transcribe --output_format {out_format}',
             shell=True)
+        
+    try:
+        # Create a new directory for the processed video and move the files
+        os.mkdir(os.path.join('Videos', video_folder_name))
+        shutil.move(file_to_process, os.path.join('Videos', video_folder_name))
 
-    # Create a new directory for the processed video and move the files
+        if args.type in [3, 4, 5, 6]:
+            output_file_base = os.path.splitext(output_file)[0]
+            output_file_txt = f'{output_file_base}.{out_format}'
+            shutil.move(output_file_txt, os.path.join('Videos', video_folder_name, output_file_txt))
+            shutil.move(output_file, os.path.join('Videos', video_folder_name))
+
+        if args.type in [1, 2]:
+            shutil.move('transcripts.txt', os.path.join('Videos', video_folder_name))
+            shutil.move('Audio_Segment', os.path.join('Videos', video_folder_name))
+
+        num_files -= 1
+        i += 1
+
+    except Exception as e:
+        print(f"Processing failed with error: {e}")
+        print("Reversing the file operations...")
+
+        # Move the files back to their original locations
+        shutil.move(os.path.join('Videos', video_folder_name, file_to_process), '.')
+        if args.type in [3, 4, 5, 6]:
+            shutil.move(os.path.join('Videos', video_folder_name, output_file_txt), '.')
+            shutil.move(os.path.join('Videos', video_folder_name, output_file), '.')
+        if args.type in [1, 2]:
+            shutil.move(os.path.join('Videos', video_folder_name, 'transcripts.txt'), '.')
+            shutil.move(os.path.join('Videos', video_folder_name, 'Audio_Segment'), '.')
+
+        # Delete the (file_to_process).wav file
+        os.remove(f'{file_to_process}.wav')
+        print("File operations reversed.")
+
+#legacy code here for any issues reinstate:
+    """# Create a new directory for the processed video and move the files
     os.mkdir(os.path.join('Videos', video_folder_name))
     shutil.move(file_to_process, os.path.join('Videos', video_folder_name))
 
@@ -116,7 +160,7 @@ while num_files > 0:
         shutil.move('Audio_Segment', os.path.join('Videos', video_folder_name))
 
     num_files -= 1
-    i += 1
+    i += 1"""
 
 cwd = os.getcwd()
 directory = os.path.join(cwd, "Videos")
@@ -125,4 +169,3 @@ directory = os.path.join(cwd, "Videos")
 for subdir in os.listdir(directory):
     subdir_path = os.path.join(directory, subdir)
     subprocess.run(['python', 'CleanUp.py'])
-    

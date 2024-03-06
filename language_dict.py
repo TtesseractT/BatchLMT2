@@ -3,7 +3,7 @@
 #-------------------------------------------------------------------#
 # Author: SABIAN HIBBS                                              #
 # License: MIT                                                      #
-# Version: 3.34                                                     #
+# Version: 3.4                                                      #
 #-------------------------------------------------------------------#
 
 # language_dict.py
@@ -120,6 +120,7 @@ language_dict = {
     "Yiddish": "yi",
     "Yoruba": "yo",
 }
+
 
 # Generate a comma-separated string of available languages
 available_languages = ','.join(language_dict.keys())

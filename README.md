@@ -5,22 +5,72 @@ This Python script is designed to automate the process of translating or transcr
 ## Prerequisites
 
 - Python 3.8 or higher
-- System Environment Variables: OPENAI_API_KEY = Please add your API Key to the variables for "--type [1, 2]" to work.
+- Works With Device or through API
+- If you are going to use the API Please use the System Environment Variables: OPENAI_API_KEY for the `API KEY`.
 
 ## Installation
 
 1. Clone this repository: `git clone https://github.com/TtesseractT/BatchWhisper-Transcription-Translation`
-2. Run the following script in the command line: `python Setup-Rosetta.py`
+2. `cd BatchWhisper-Transcription-Translation`
+3. Run the following script in the command line: `python Setup-Rosetta.py`
+4. Drop all your videos into the `Input-Videos` folder in the directory.
+5. Run `python Run.py --type {LOOK BELOW FOR CORRECT INT TO USE}`
+
+| Argument | Description |
+| --- | --- |
+| --type 1 | Text to Audio Segments |
+| --type 2 | Text to Audio Segments with Translation |
+| --type 3 | Audio Translation (CPU) |
+| --type 4 | Audio Translation (GPU) |
+| --type 5 | Audio Transcription (CPU) |
+| --type 6 | Audio Transcription (GPU) |
 
 ## Usage
 
 **Supported Input File Types:**
 
-`3GP - Mobile Phone Video` : `AAC - Advanced Audio Codec` : `AC3 - Audio Codec 3` : `AIF, AIFF - Audio Interchange File Format` : `AMR - Adaptive Multi-Rate Audio Codec` : `APE - Monkey's Audio Format` : `ASF - Advanced Streaming Format` : `AVI - Audio Video Interleaved Format` : `CAF - Core Audio Format` : `DTS - Digital Theater Systems Audio` : `FLAC - Free Lossless Audio Codec` : `M4A, M4B - MPEG-4 Audio Layer` : `MIDI - Musical Instrument Digital Interface` : `MKV - Matroska Multimedia Container` : `MOV - Apple QuickTime Movie` : `MP4 - MPEG-4 Part 14 Container` : `MPEG - Moving Picture Experts Group Video` : `OGA, OGG - Ogg Vorbis Audio` : `RA - RealAudio` : `RM - RealMedia` : `WAV - Waveform Audio Format` : `WebM - Web Media Format` : `WMA - Windows Media Audio` : `WV - WavPack Audio Format` : `AVCHD - Advanced Video Codec High Definition` : `DV - Digital Video Format` : `FLV - Flash Video Format` : `M2TS, MTS - MPEG-2 Transport Stream` : `MJPEG - Motion JPEG Video Format` : `MPEG-1 - Moving Picture Experts Group Video` : `MPEG-2 - Moving Picture Experts Group Video` : `MPEG-4 - Moving Picture Experts Group Video` : `RMVB - RealMedia Variable Bitrate Format` : `SWF - Shockwave Flash Movie` : `VOB - DVD Video Object` : `WMV - Windows Media Video`
+| Format | Description | Format | Description | Format | Description |
+|--------|-------------|--------|-------------|--------|-------------|
+| 3GP | Mobile Phone Video | AAC | Advanced Audio Codec | AC3 | Audio Codec 3 |
+| AIF, AIFF | Audio Interchange File Format | AMR | Adaptive Multi-Rate Audio Codec | APE | Monkey's Audio Format |
+| ASF | Advanced Streaming Format | AVI | Audio Video Interleaved Format | CAF | Core Audio Format |
+| DTS | Digital Theater Systems Audio | FLAC | Free Lossless Audio Codec | M4A, M4B | MPEG-4 Audio Layer |
+| MIDI | Musical Instrument Digital Interface | MKV | Matroska Multimedia Container | MOV | Apple QuickTime Movie |
+| MP4 | MPEG-4 Part 14 Container | MPEG | Moving Picture Experts Group Video | OGA, OGG | Ogg Vorbis Audio |
+| RA | RealAudio | RM | RealMedia | WAV | Waveform Audio Format |
+| WebM | Web Media Format | WMA | Windows Media Audio | WV | WavPack Audio Format |
+| AVCHD | Advanced Video Codec High Definition | DV | Digital Video Format | FLV | Flash Video Format |
+| M2TS, MTS | MPEG-2 Transport Stream | MJPEG | Motion JPEG Video Format | MPEG-1 | Moving Picture Experts Group Video |
+| MPEG-2 | Moving Picture Experts Group Video | MPEG-4 | Moving Picture Experts Group Video | RMVB | RealMedia Variable Bitrate Format |
+| SWF | Shockwave Flash Movie | VOB | DVD Video Object | WMV | Windows Media Video |
+
 
 **Supported Languages:**
 
->Afrikaans,Albanian,Amharic,Arabic,Armenian,Assamese,Azerbaijani,Bashkir,Basque,Belarusian,Bengali,Bosnian,Breton,Bulgarian,Burmese,Castilian,Catalan,Chinese,Croatian,Czech,Danish,Dutch,English,Estonian,Faroese,Finnish,Flemish,French,Galician,Georgian,German,Greek,Gujarati,Haitian,Haitian,Creole,Hausa,Hawaiian,Hebrew,Hindi,Hungarian,Icelandic,Indonesian,Italian,Japanese,Javanese,Kannada,Kazakh,Khmer,Korean,Lao,Latin,Latvian,Letzeburgesch,Lingala,Lithuanian,Luxembourgish,Macedonian,Malagasy,Malay,Malayalam,Maltese,Maori,Marathi,Moldavian,Moldovan,Mongolian,Myanmar,Nepali,Norwegian,Nynorsk,Occitan,Panjabi,Pashto,Persian,Polish,Portuguese,Punjabi,Pushto,Romanian,Russian,Sanskrit,Serbian,Shona,Sindhi,Sinhala,Sinhalese,Slovak,Slovenian,Somali,Spanish,Sundanese,Swahili,Swedish,Tagalog,Tajik,Tamil,Tatar,Telugu,Thai,Tibetan,Turkish,Turkmen,Ukrainian,Urdu,Uzbek,Valencian,Vietnamese,Welsh,Yiddish,Yoruba
+| Language |  |  |  |  |  |
+|----------|----------|----------|----------|----------|----------|
+| Afrikaans | Albanian | Amharic | Arabic | Armenian | Assamese |
+| Azerbaijani | Bashkir | Basque | Belarusian | Bengali | Bosnian |
+| Breton | Bulgarian | Burmese | Castilian | Catalan | Chinese |
+| Croatian | Czech | Danish | Dutch | English | Estonian |
+| Faroese | Finnish | Flemish | French | Galician | Georgian |
+| German | Greek | Gujarati | Haitian | Haitian Creole | Hausa |
+| Hawaiian | Hebrew | Hindi | Hungarian | Icelandic | Indonesian |
+| Italian | Japanese | Javanese | Kannada | Kazakh | Khmer |
+| Korean | Lao | Latin | Latvian | Letzeburgesch | Lingala |
+| Lithuanian | Luxembourgish | Macedonian | Malagasy | Malay | Malayalam |
+| Maltese | Maori | Marathi | Moldavian | Moldovan | Mongolian |
+| Myanmar | Nepali | Norwegian | Nynorsk | Occitan | Panjabi |
+| Pashto | Persian | Polish | Portuguese | Punjabi | Pushto |
+| Romanian | Russian | Sanskrit | Serbian | Shona | Sindhi |
+| Sinhala | Sinhalese | Slovak | Slovenian | Somali | Spanish |
+| Sundanese | Swahili | Swedish | Tagalog | Tajik | Tamil |
+| Tatar | Telugu | Thai | Tibetan | Turkish | Turkmen |
+| Ukrainian | Urdu | Uzbek | Valencian | Vietnamese | Welsh |
+| Yiddish | Yoruba | | | | |
+
+
+
 
 **Supported Output file type [3, 4, 5, 6]:**
 
