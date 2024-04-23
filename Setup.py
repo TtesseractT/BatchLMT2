@@ -6,38 +6,45 @@
 # Version: 3.34                                                     #
 #-------------------------------------------------------------------#
 
-import subprocess
-import os
+import platform
+import sys
+from pathlib import Path
 
-if __name__ == "__main__":
-    # Upgrade openai-whisper
-    print("Installing/upgrading openai-whisper...")
-    subprocess.run("pip install -U openai-whisper")
+import pkg_resources
+from setuptools import find_packages, setup
 
-    # Install whisper from GitHub
-    print("Installing whisper from GitHub...")
-    subprocess.run("pip install git+https://github.com/openai/whisper.git")
 
-    # Upgrade whisper from GitHub
-    print("Upgrading whisper from GitHub...")
-    subprocess.run("pip install --upgrade --no-deps --force-reinstall git+https://github.com/openai/whisper.git")
+def read_version(fname="whisper/version.py"):
+    exec(compile(open(fname, encoding="utf-8").read(), fname, "exec"))
+    return locals()["__version__"]
 
-    # Install ffmpeg
-    print("Installing ffmpeg...")
-    subprocess.run("pip install ffmpeg")
 
-    # Install openai
-    print("Installing openai...")
-    subprocess.run("pip install openai")
+requirements = []
+if sys.platform.startswith("linux") and platform.machine() == "x86_64":
+    requirements.append("triton>=2.0.0,<3")
 
-    # Install setuptools-rust
-    print("Installing setuptools-rust...")
-    subprocess.run("pip install setuptools-rust")
-
-    # Install torch for CUDA
-    print("Installing torch, torchvision, and torchaudio...")
-    subprocess.run("pip install torch torchvision torchaudio")
-
-    # Create the directories if they don't exist
-    if not os.path.exists('Input-Videos'):
-        os.mkdir('Input-Videos')
+setup(
+    name="openai-whisper",
+    py_modules=["whisper"],
+    version=read_version(),
+    description="Robust Speech Recognition via Large-Scale Weak Supervision",
+    long_description=open("README.md", encoding="utf-8").read(),
+    long_description_content_type="text/markdown",
+    readme="README.md",
+    python_requires=">=3.8",
+    author="OpenAI",
+    url="https://github.com/openai/whisper",
+    license="MIT",
+    packages=find_packages(exclude=["tests*"]),
+    install_requires=[
+        str(r)
+        for r in pkg_resources.parse_requirements(
+            Path(__file__).with_name("requirements.txt").open()
+        )
+    ],
+    entry_points={
+        "console_scripts": ["whisper=whisper.transcribe:cli"],
+    },
+    include_package_data=True,
+    extras_require={"dev": ["pytest", "scipy", "black", "flake8", "isort"]},
+)
