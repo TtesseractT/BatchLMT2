@@ -2,6 +2,7 @@ import platform
 import sys
 from pathlib import Path
 
+
 import pkg_resources
 from setuptools import find_packages, setup
 
