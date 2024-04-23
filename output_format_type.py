@@ -15,6 +15,7 @@ output_format_type = {
     "VTT": "vtt",
     "SRT": "srt",
     "TSV": "tsv",
+    "ALL": "all",
     
 }
 

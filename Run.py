@@ -95,9 +95,7 @@ while num_files > 0:
             shell=True)
         
     elif args.type == 4:
-        subprocess.run(
-            f'whisper "{output_file}" --device cuda --model large --language {language} --task translate --output_format {out_format}',
-            shell=True)
+        subprocess.run(f'whisper "{output_file}" --device cuda --model large --language {language} --task translate --output_format {out_format}', shell=True)
         
     elif args.type == 5:
         subprocess.run(
@@ -105,8 +103,7 @@ while num_files > 0:
             shell=True)
         
     elif args.type == 6:
-        subprocess.run(
-            f'whisper "{output_file}" --device cuda --model large --language {language} --task transcribe --output_format {out_format}',
+        subprocess.run(f'whisper "{output_file}" --device cuda --model large --language {language} --task transcribe --output_format {out_format}',
             shell=True)
         
     try:
@@ -133,11 +130,15 @@ while num_files > 0:
 
         # Move the files back to their original locations
         shutil.move(os.path.join('Videos', video_folder_name, file_to_process), '.')
+        
         if args.type in [3, 4, 5, 6]:
             shutil.move(os.path.join('Videos', video_folder_name, output_file_txt), '.')
             shutil.move(os.path.join('Videos', video_folder_name, output_file), '.')
+            
         if args.type in [1, 2]:
-            shutil.move(os.path.join('Videos', video_folder_name, 'transcripts.txt'), '.')
+            for format in output_format_type.available_op_format.values():
+                output_file_format = f'{output_file_base}.{format}'
+                shutil.move(os.path.join('Videos', video_folder_name, output_file_format), '.')
             shutil.move(os.path.join('Videos', video_folder_name, 'Audio_Segment'), '.')
 
         # Delete the (file_to_process).wav file
