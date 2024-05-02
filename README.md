@@ -12,9 +12,8 @@ This Python script is designed to automate the process of translating or transcr
 
 1. Clone this repository: `git clone https://github.com/TtesseractT/BatchWhisper-Transcription-Translation`
 2. `cd BatchWhisper-Transcription-Translation`
-3. Run the following script in the command line: `python Setup-Rosetta.py`
-4. Drop all your videos into the `Input-Videos` folder in the directory.
-5. Run `python Run.py --type {LOOK BELOW FOR CORRECT INT TO USE}`
+3. For fresh install inc conda, cuda, python, pytorch (GPU) Please run `windows_setup.bat`
+4. Run `python Run.py --type {Type Number}`
 
 | Argument | Description |
 | --- | --- |
