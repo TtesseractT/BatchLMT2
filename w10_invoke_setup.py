@@ -3,9 +3,6 @@ import subprocess
 import requests
 import os
 
-filename = "cuda_11.8.0_522.06_windows"
-url = "https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_522.06_windows.exe"
-
 # This code will install all dependancies based on the current needs of the user:
 def create_and_activate_conda_env(env_name="Batch_Env", python_version="3.10"):
     """Installs conda, creates a new conda environment with the specified Python version,
@@ -19,16 +16,24 @@ def create_and_activate_conda_env(env_name="Batch_Env", python_version="3.10"):
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
 
-def download_cuda_file_w10(url: str, filename: str, download_dir: str) -> None:
-    """Downloads a file from the specified URL and
-    then opens it using the default application."""
+def download_and_install_cuda(url: str, filename: str, download_dir: str) -> None:
+    """Downloads CUDA installer from the specified URL to the given directory,
+    and then executes a silent installation."""
     # Ensure the download directory exists
     os.makedirs(download_dir, exist_ok=True)
+
+    # Download the file
+    print("Downloading CUDA installer...")
     response = requests.get(url)
-    with open(os.path.join(download_dir, filename), 'wb') as file:
+    installer_path = os.path.join(download_dir, filename)
+    with open(installer_path, 'wb') as file:
         file.write(response.content)
-    # Open the downloaded file using the default application
-    subprocess.Popen([os.path.join(download_dir, filename)], shell=True)
+    print("Download complete.")
+
+    # Execute the installer silently
+    print("Installing CUDA...")
+    subprocess.Popen([installer_path, '/S', f'/D={download_dir}'], shell=True)
+    print("Installation started. Please wait for it to complete.")
 
 if __name__ == "__main__":
     print("Running Blanket Install for Windows 10")
@@ -52,9 +57,10 @@ if __name__ == "__main__":
 
     """Cuda 11.8 Installation"""
     print("Attempting to install Cuda 11.8")
-    #subprocess.run(["pip", "install", "requests"])
-    download_dir = os.getcwd()  # or any other directory
-    download_cuda_file_w10(url, filename, download_dir)
+    download_dir = os.getcwd()  # Use the current working directory or specify another
+    filename = "cuda_11.8.0_522.06_windows.exe"
+    url = "https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_522.06_windows.exe"
+    download_and_install_cuda(url, filename, download_dir)
 
     print("Gathering dependancies and installing them")
     subprocess.run(["pip", "install", "py7zr"])
