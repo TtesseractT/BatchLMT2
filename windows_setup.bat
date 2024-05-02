@@ -19,8 +19,7 @@ if exist "%UserProfile%\Miniconda3\" (
 
 :: Step 3: Start the Anaconda PowerShell prompt and run the update and Python script
 echo Opening Anaconda PowerShell Prompt to update Conda and run script...
-start "" "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Miniconda3 (64-bit)\Anaconda Powershell Prompt (Miniconda3).lnk" powershell -Command "& {conda update conda -y; conda run -n base python '%~dp0windows_blank_setup.py'}"
+start "" "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Miniconda3 (64-bit)\Anaconda Powershell Prompt (Miniconda3).lnk" powershell -Command "conda update conda -y; conda activate base; python '%~dp0windows_blank_setup.py'"
 
 echo Setup completed!
 pause
-
