@@ -17,9 +17,9 @@ if exist "%UserProfile%\Miniconda3\" (
     start /wait "" "%UserProfile%\Downloads\Miniconda3-latest-Windows-x86_64.exe" /InstallationType=JustMe /RegisterPython=1 /S /D=%UserProfile%\Miniconda3
 )
 
-:: Step 3: Start the Anaconda PowerShell prompt and run the update and Python script
-echo Opening Anaconda PowerShell Prompt to update Conda and run script...
-start "" "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Miniconda3 (64-bit)\Anaconda Powershell Prompt (Miniconda3).lnk" powershell -NoExit -Command "conda update conda -y; conda activate base; python '%~dp0w10_invoke_setup.py'"
+:: Step 3: Properly invoke PowerShell, initialize Conda environment, install the package, and run the script
+echo Opening PowerShell, initializing Conda, installing 'requests', and running script...
+start "" powershell -NoExit -Command "cd '%UserProfile%\Miniconda3'; .\Scripts\activate; conda activate base; pip install requests; python '%~dp0w10_invoke_setup.py'"
 
 echo Setup completed!
 pause

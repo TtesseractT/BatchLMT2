@@ -1,5 +1,4 @@
 import shutil
-import py7zr
 import subprocess
 import requests
 import os
@@ -53,7 +52,7 @@ if __name__ == "__main__":
 
     """Cuda 11.8 Installation"""
     print("Attempting to install Cuda 11.8")
-    subprocess.run(["pip", "install", "requests"])
+    #subprocess.run(["pip", "install", "requests"])
     download_dir = os.getcwd()  # or any other directory
     download_cuda_file_w10(url, filename, download_dir)
 
