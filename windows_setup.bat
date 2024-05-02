@@ -42,9 +42,9 @@ if exist "%ProgramFiles%\Git\bin\git.exe" (
     echo Downloading Git Installer...
     powershell -command "Invoke-WebRequest -Uri 'https://github.com/git-for-windows/git/releases/latest/download/Git-2.32.0.2-64-bit.exe' -OutFile '%UserProfile%\Downloads\GitInstaller.exe'"
 
-    :: Install Git and add it to the system PATH
+    :: Install Git silently with default options
     echo Installing Git...
-    start /wait "" "%UserProfile%\Downloads\GitInstaller.exe" /VERYSILENT /NORESTART /NOCANCEL /SP- /LOG /COMPONENTS="icons,ext\reg\shellhere,assoc,assoc_sh"
+    start /wait "" "%UserProfile%\Downloads\GitInstaller.exe" /VERYSILENT /COMPONENTS="icons,ext\reg\shellhere,assoc,assoc_sh" /LOADINF="git-install.inf"
 
     :: Optionally, add Git to PATH immediately for this session
     set PATH=%PATH%;%ProgramFiles%\Git\bin
