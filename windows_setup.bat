@@ -17,17 +17,9 @@ if exist "%UserProfile%\Miniconda3\" (
     start /wait "" "%UserProfile%\Downloads\Miniconda3-latest-Windows-x86_64.exe" /InstallationType=JustMe /RegisterPython=1 /S /D=%UserProfile%\Miniconda3
 )
 
-:: Correct script path and file existence verification
-set "scriptPath=%~dp0Setup.py"
-if not exist "%scriptPath%" (
-    echo Python script not found at %scriptPath%
-    goto end
-)
-
 :: Step 3: Start the Anaconda PowerShell prompt and run the update and Python script
 echo Opening Anaconda PowerShell Prompt to update Conda and run script...
-start "" "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Miniconda3 (64-bit)\Anaconda Powershell Prompt (Miniconda3).lnk" powershell -NoExit -Command "conda update conda -y; conda activate base; python '%scriptPath%'"
+start "" "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Miniconda3 (64-bit)\Anaconda Powershell Prompt (Miniconda3).lnk" powershell -NoExit -Command "conda update conda -y; conda activate base; python '%~dp0w10_invoke_setup.py'"
 
-:end
 echo Setup completed!
 pause
