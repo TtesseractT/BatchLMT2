@@ -10,17 +10,10 @@ import subprocess
 import os
 
 if __name__ == "__main__":
-    # Upgrade openai-whisper
-    print("Installing/upgrading openai-whisper...")
-    subprocess.run("pip install -U openai-whisper")
 
     # Install whisper from GitHub
     print("Installing whisper from GitHub...")
     subprocess.run("pip install git+https://github.com/openai/whisper.git")
-
-    # Upgrade whisper from GitHub
-    print("Upgrading whisper from GitHub...")
-    subprocess.run("pip install --upgrade --no-deps --force-reinstall git+https://github.com/openai/whisper.git")
 
     # Install ffmpeg
     print("Installing ffmpeg...")
@@ -29,10 +22,6 @@ if __name__ == "__main__":
     # Install openai
     print("Installing openai...")
     subprocess.run("pip install openai")
-
-    # Install setuptools-rust
-    print("Installing setuptools-rust...")
-    subprocess.run("pip install setuptools-rust")
 
     # Install torch for CUDA
     print("Installing torch, torchvision, and torchaudio...")
