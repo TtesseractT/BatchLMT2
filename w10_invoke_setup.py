@@ -59,15 +59,19 @@ def setup_whisper():
     with ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(".")
 
-    # Change directory to where setup.py is located
-    setup_dir = Path("whisper-main")
-    
+    # Remove the ZIP file after extraction
+    zip_path.unlink()
+    print("ZIP file removed.")
+
+    # Change directory to the directory containing setup.py
+    setup_dir = Path.cwd() / "whisper-main"
+    os.chdir(setup_dir)
+    print(f"Changed directory to: {setup_dir}")
+
     # Execute the setup.py script
     print("Running setup.py...")
-    subprocess.run(['python', setup_dir / 'setup.py'], check=True)
+    subprocess.run(['python', 'setup.py'], check=True)
     
-    # Clean up the zip file
-    zip_path.unlink()
     print("Setup complete.")
 
 if __name__ == "__main__":
