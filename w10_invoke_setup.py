@@ -37,81 +37,37 @@ def download_and_install_cuda(url: str, filename: str, download_dir: str) -> Non
     subprocess.Popen([installer_path, '/S', f'/D={download_dir}'], shell=True)
     print("Installation started. Please wait for it to complete.")
 
-def setup_whisper():
-    """
-    # Download Whisper,
-    # Git Whisper URL: https://github.com/openai/whisper/archive/refs/heads/main.zip
-    # Extract 'whisper-main.zip' = DIR /whisper-main
-    # 'cd whisper-main/whisper-main'
-    subprocess.run(['python', 'setup.py'])
-    """
-    # URL for Whisper's GitHub repository archive
-    whisper_url = "https://github.com/openai/whisper/archive/refs/heads/main.zip"
-    zip_path = Path("whisper-main.zip")
-    
-    # Download Whisper zip from GitHub
-    print("Downloading Whisper...")
-    response = requests.get(whisper_url)
-    zip_path.write_bytes(response.content)
-    
-    # Extract the ZIP file
-    print("Extracting Whisper...")
-    with ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(".")
-
-    # Remove the ZIP file after extraction
-    zip_path.unlink()
-    print("ZIP file removed.")
-
-    # Change directory to the directory containing setup.py
-    setup_dir = Path.cwd() / "whisper-main"
-    os.chdir(setup_dir)
-    print(f"Changed directory to: {setup_dir}")
-
-    # Execute the setup.py script
-    subprocess.run(['pip', 'install', '-e'])
-    print("Running Builder")
-    subprocess.run(['python', '-m', 'build'], check=True)
-    print("Installing Packages")
-    subprocess.run(['pip', 'install'], check=True)
-    
-    print("Setup complete.")
-
 if __name__ == "__main__":
-    print("Running Blanket Install for Windows 10")
+    print("\nRunning Blanket Install for Windows 10\n")
 
-    user_accepted_confirm = input("""
+    try:
+        print("Conda Version:\n")
+        subprocess.run(["conda", "--version"])
+    except:
+        print("Conda Not Installed\n Run windows_setup.bat as Admin")
 
-    Conda: https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe                             
-                                  
-    Please type 'confirm' if this is true.
-    Response: """)
-    if user_accepted_confirm.lower() == "confirm":
-        try:
-            subprocess.run(["conda", "--version"])
-            print("Anaconda (Conda) is already installed.")
-
-        except subprocess.CalledProcessError:
-            print("Anaconda (Conda) is not installed.\n Please follow the link above to download Conda.")
+    print("\nCreating Conda Environment")
+    subprocess.run(['conda', 'create', '--name', 'Whisper', 'python=3.10', 'git', '-y'])
+    subprocess.run({'conda', 'activate', 'Whisper'})
 
     """Cuda 11.8 Installation"""
-    print("Attempting to install Cuda 11.8")
+    print("\nAttempting to install Cuda 11.8")
     download_dir = os.getcwd()  # Use the current working directory or specify another
     filename = "cuda_11.8.0_522.06_windows.exe"
     url = "https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_522.06_windows.exe"
     download_and_install_cuda(url, filename, download_dir)
 
-    print("Gathering dependancies and installing them")
-    subprocess.run(["pip", "install", "py7zr"])
+    print("\nInstalling Whisper from OpenAI\n")
+    subprocess.run(['pip', 'install', 'git+https://github.com/openai/whisper.git'])
+    subprocess.run(['pip', 'install', '--upgrade', '--no-deps', '--force-reinstall', 'git+https://github.com/openai/whisper.git'])
 
-    setup_whisper()
-
-    print("Upgrading PyTorch...")
-    subprocess.run([f'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118'])
+    print("\nUpgrading PyTorch...")
+    subprocess.run(['pip', 'install', 'torch', 'torchvision', 'torchaudio', '--index-url', 'https://download.pytorch.org/whl/cu118'])
     
-    print("Setup Complete, Creating Directory")
+    print("\nSetup Complete, Creating Directory")
     # Create the directories if they don't exist
     if not os.path.exists('Input-Videos'):
         os.mkdir('Input-Videos')
 
-    print("Install Complete!\n Please 'Restart' computer for changes to be saved ")
+    print("\nDownload Complete: Follow Instructions with CUDA for your system.")
+    print("\nPlease 'Restart' computer for changes to be saved once CUDA has finished installing.")
