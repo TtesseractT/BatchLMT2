@@ -60,7 +60,7 @@ def setup_whisper():
         zip_ref.extractall(".")
 
     # Change directory to where setup.py is located
-    setup_dir = Path("whisper-main/whisper-main")
+    setup_dir = Path("whisper-main")
     
     # Execute the setup.py script
     print("Running setup.py...")
