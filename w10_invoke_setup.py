@@ -41,6 +41,12 @@ def download_and_install_cuda(url: str, filename: str, download_dir: str) -> Non
 if __name__ == "__main__":
     print("\nRunning Blanket Install for Windows 10\n")
 
+    try:
+        print("Testing Cuda Availability")
+        subprocess.run(['nvidia-smi'])
+    except:
+        print("Cuda Not Installed")
+    
     """Cuda 11.8 Installation"""
     print("\nAttempting to install Cuda 11.8")
     download_dir = os.getcwd()  # Use the current working directory or specify another
