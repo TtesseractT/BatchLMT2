@@ -36,6 +36,7 @@ def download_and_install_cuda(url: str, filename: str, download_dir: str) -> Non
     print("Installing CUDA...")
     subprocess.Popen([installer_path, '/S', f'/D={download_dir}'], shell=True)
     print("Installation started. Please wait for it to complete.")
+    
 
 if __name__ == "__main__":
     print("\nRunning Blanket Install for Windows 10\n")
@@ -48,7 +49,7 @@ if __name__ == "__main__":
 
     print("\nCreating Conda Environment")
     subprocess.run(['conda', 'create', '--name', 'Whisper', 'python=3.10', 'git', '-y'])
-    subprocess.run({'conda', 'activate', 'Whisper'})
+    subprocess.run({'conda', 'activate', 'Whisper'}, shell=True)
 
     """Cuda 11.8 Installation"""
     print("\nAttempting to install Cuda 11.8")
