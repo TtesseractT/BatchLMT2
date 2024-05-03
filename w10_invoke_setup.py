@@ -69,8 +69,10 @@ def setup_whisper():
     print(f"Changed directory to: {setup_dir}")
 
     # Execute the setup.py script
-    print("Running setup.py...")
-    subprocess.run(['python', 'setup.py'], check=True)
+    print("Running Builder")
+    subprocess.run(['python', 'setup.py', 'build'], check=True)
+    print("Installing Packages")
+    subprocess.run(['python', 'setup.py', 'install'], check=True)
     
     print("Setup complete.")
 
