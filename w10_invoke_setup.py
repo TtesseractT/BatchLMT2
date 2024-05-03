@@ -2,6 +2,8 @@ import shutil
 import subprocess
 import requests
 import os
+from zipfile import ZipFile
+from pathlib import Path
 
 # This code will install all dependancies based on the current needs of the user:
 def create_and_activate_conda_env(env_name="Batch_Env", python_version="3.10"):
@@ -35,6 +37,39 @@ def download_and_install_cuda(url: str, filename: str, download_dir: str) -> Non
     subprocess.Popen([installer_path, '/S', f'/D={download_dir}'], shell=True)
     print("Installation started. Please wait for it to complete.")
 
+def setup_whisper():
+    """
+    # Download Whisper,
+    # Git Whisper URL: https://github.com/openai/whisper/archive/refs/heads/main.zip
+    # Extract 'whisper-main.zip' = DIR /whisper-main
+    # 'cd whisper-main/whisper-main'
+    subprocess.run(['python', 'setup.py'])
+    """
+    # URL for Whisper's GitHub repository archive
+    whisper_url = "https://github.com/openai/whisper/archive/refs/heads/main.zip"
+    zip_path = Path("whisper-main.zip")
+    
+    # Download Whisper zip from GitHub
+    print("Downloading Whisper...")
+    response = requests.get(whisper_url)
+    zip_path.write_bytes(response.content)
+    
+    # Extract the ZIP file
+    print("Extracting Whisper...")
+    with ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(".")
+
+    # Change directory to where setup.py is located
+    setup_dir = Path("whisper-main/whisper-main")
+    
+    # Execute the setup.py script
+    print("Running setup.py...")
+    subprocess.run(['python', setup_dir / 'setup.py'], check=True)
+    
+    # Clean up the zip file
+    zip_path.unlink()
+    print("Setup complete.")
+
 if __name__ == "__main__":
     print("Running Blanket Install for Windows 10")
 
@@ -52,9 +87,6 @@ if __name__ == "__main__":
         except subprocess.CalledProcessError:
             print("Anaconda (Conda) is not installed.\n Please follow the link above to download Conda.")
 
-    # Close current 
-    # ------------------------------------------------------------------------------------------
-
     """Cuda 11.8 Installation"""
     print("Attempting to install Cuda 11.8")
     download_dir = os.getcwd()  # Use the current working directory or specify another
@@ -65,13 +97,7 @@ if __name__ == "__main__":
     print("Gathering dependancies and installing them")
     subprocess.run(["pip", "install", "py7zr"])
 
-    # Install whisper from GitHub
-    print("Installing whisper from GitHub...")
-    subprocess.run(["pip", "install", "git+https://github.com/openai/whisper.git"])
-
-    # Upgrade whisper from GitHub
-    print("Upgrading whisper from GitHub...")
-    subprocess.run(["pip", "install", "--upgrade", "--no-deps", "--force-reinstall", "git+https://github.com/openai/whisper.git"])
+    setup_whisper()
 
     print("Upgrading PyTorch...")
     subprocess.run([f'pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118'])
@@ -80,3 +106,5 @@ if __name__ == "__main__":
     # Create the directories if they don't exist
     if not os.path.exists('Input-Videos'):
         os.mkdir('Input-Videos')
+
+    print("Install Complete!\n Please 'Restart' computer for changes to be saved ")
