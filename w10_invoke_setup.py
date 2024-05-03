@@ -54,7 +54,7 @@ if __name__ == "__main__":
     except:
         print("Conda Not Installed\n Run windows_setup.bat as Admin")
     
-    PRINT("Testing for git")
+    print("Testing for git")
     try:
         subprocess.run(['conda', '--version'])
     except:
