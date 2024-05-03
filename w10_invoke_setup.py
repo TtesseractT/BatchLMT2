@@ -41,22 +41,24 @@ def download_and_install_cuda(url: str, filename: str, download_dir: str) -> Non
 if __name__ == "__main__":
     print("\nRunning Blanket Install for Windows 10\n")
 
-    try:
-        print("Conda Version:\n")
-        subprocess.run(["conda", "--version"])
-    except:
-        print("Conda Not Installed\n Run windows_setup.bat as Admin")
-
-    print("\nCreating Conda Environment")
-    subprocess.run(['conda', 'create', '--name', 'Whisper', 'python=3.10', 'git', '-y'])
-    subprocess.run({'conda', 'activate', 'Whisper'}, shell=True)
-
     """Cuda 11.8 Installation"""
     print("\nAttempting to install Cuda 11.8")
     download_dir = os.getcwd()  # Use the current working directory or specify another
     filename = "cuda_11.8.0_522.06_windows.exe"
     url = "https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_522.06_windows.exe"
     download_and_install_cuda(url, filename, download_dir)
+
+    try:
+        print("Conda Version:\n")
+        subprocess.run(["conda", "--version"])
+    except:
+        print("Conda Not Installed\n Run windows_setup.bat as Admin")
+    
+    PRINT("Testing for git")
+    try:
+        subprocess.run(['conda', '--version'])
+    except:
+        subprocess.run(['conda', 'install', 'git', '-y'])
 
     print("\nInstalling Whisper from OpenAI\n")
     subprocess.run(['pip', 'install', 'git+https://github.com/openai/whisper.git'])
