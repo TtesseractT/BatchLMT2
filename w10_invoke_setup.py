@@ -1,6 +1,7 @@
 import shutil
 import subprocess
 import requests
+import platform
 import os
 from zipfile import ZipFile
 from pathlib import Path
@@ -37,13 +38,31 @@ def download_and_install_cuda_w(url: str, filename: str, download_dir: str) -> N
     subprocess.Popen([installer_path, '/S', f'/D={download_dir}'], shell=True)
     print("Installation started. Please wait for it to complete.")
     
+def get_os_variable():
+    system, node, release, version, machine, processor = platform.uname()
+    os_name = platform.system()
+    
+    if os_name == "Windows":
+        # Extracting major version number for Windows
+        major_version = version.split('.')[2]
+        return f'w_{major_version}'
+    elif os_name == "Darwin":
+        # MacOS version can be found directly in `release`
+        return f'm_{release}'
+    elif os_name == "Linux":
+        # Optionally handle Linux differently; here we use the kernel release
+        return f'l_{release}'
+    else:
+        return f'other_{release}'
 
 if __name__ == "__main__":
 
+    # Example usage
+    os_variable = get_os_variable()
+    print(os_variable)
 
 
-
-    if os_varient == 'w':
+    if os_variable == 'w':
         print("\nRunning Blanket Install for Windows 10\n")
 
         try:
