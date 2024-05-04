@@ -102,9 +102,12 @@ if __name__ == "__main__":
 
     elif os_variable.startswith('m_'):
         print("The system is running macOS.")
+        mac_install()
 
     elif os_variable.startswith('l_'):
         print("The system is running Linux.")
+        linux_install()
+
     else:
         print("The operating system is unknown or not supported.")
 
