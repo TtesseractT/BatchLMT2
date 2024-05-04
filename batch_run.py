@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------#
-# BatchWhisper-Transcription-Translation [LOCAL & API]              #
+# BatchWhisper                                                      #
 #-------------------------------------------------------------------#
 # Author: SABIAN HIBBS                                              #
 # License: MIT                                                      #
@@ -17,7 +17,7 @@ i = 1
 try:
     while num_files > 0:
         video_folder_name = f'Video - {i}'
-        
+
         while os.path.exists(os.path.join('Videos', video_folder_name)):
             i += 1
             video_folder_name = f'Video - {i}'
