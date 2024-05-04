@@ -19,7 +19,7 @@ if exist "%UserProfile%\Miniconda3\" (
 
 :: Step 3: Properly invoke Miniconda PowerShell, initialize environment, install package, and run script
 echo Opening Miniconda PowerShell Prompt to update environment, install 'requests', and run script...
-start "" powershell -NoExit -ExecutionPolicy ByPass -Command "& {& '%UserProfile%\Miniconda3\shell\condabin\conda-hook.ps1'; conda activate '%UserProfile%\Miniconda3'; pip install requests; python '%~dp0w10_invoke_setup.py'}"
+start "" powershell -NoExit -ExecutionPolicy ByPass -Command "& {& '%UserProfile%\Miniconda3\shell\condabin\conda-hook.ps1'; conda activate '%UserProfile%\Miniconda3'; pip install requests; python '%~dp0os_setup.py'}"
 
 echo Setup completed!
 pause
