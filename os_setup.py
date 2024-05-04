@@ -1,3 +1,12 @@
+#-------------------------------------------------------------------#
+# BatchWhisper-Transcription-Translation [LOCAL & API]              #
+#-------------------------------------------------------------------#
+# Author: SABIAN HIBBS                                              #
+# License: MIT                                                      #
+# Version: 3.5                                                      #
+#-------------------------------------------------------------------#
+
+
 import shutil
 import subprocess
 import requests

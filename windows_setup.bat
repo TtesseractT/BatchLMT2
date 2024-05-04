@@ -1,3 +1,11 @@
+:: #-------------------------------------------------------------------#
+:: # BatchWhisper-Transcription-Translation [LOCAL & API]              #
+:: #-------------------------------------------------------------------#
+:: # Author: SABIAN HIBBS                                              #
+:: # License: MIT                                                      #
+:: # Version: 3.5                                                      #
+:: #-------------------------------------------------------------------#
+
 @echo off
 cls
 echo Checking for existing applications...
