@@ -6,18 +6,54 @@ import os
 from zipfile import ZipFile
 from pathlib import Path
 
-# This code will install all dependancies based on the current needs of the user:
-def create_and_activate_conda_env_w(env_name="Batch_Env", python_version="3.10"):
-    """Installs conda, creates a new conda environment with the specified Python version,
-       activates it, and changes the working directory to the environment's root."""
+def windows_install():
+    print("System detected: Windows")
+    print("\nRunning Blanket Install for Windows 10\n")
     try:
-        subprocess.run(["conda", "create", "-n", env_name, f"python={python_version}", "-y"], check=True)
-        subprocess.run(["conda", "activate", env_name], check=True, shell=True)
-        os.chdir(os.environ["CONDA_PREFIX"])
-        print(f"Conda environment '{env_name}' created and activated!")
-        print(f"Current working directory: {os.getcwd()}")
-    except subprocess.CalledProcessError as e:
-        print(f"Error: {e}")
+        print("Testing Cuda Availability")
+        subprocess.run(['nvidia-smi'])
+    except:
+        print("Cuda Not Installed")
+
+    """Cuda 11.8 Installation"""
+    print("\nAttempting to install Cuda 11.8")
+    download_dir = os.getcwd()  # Use the current working directory or specify another
+    filename = "cuda_11.8.0_522.06_windows.exe"
+    url = "https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_522.06_windows.exe"
+    download_and_install_cuda_w(url, filename, download_dir)
+
+    try:
+        print("Conda Version:\n")
+        subprocess.run(["conda", "--version"])
+    except:
+        print("Conda Not Installed\n Run windows_setup.bat as Admin")
+    
+    print("Testing for git")
+    try:
+        subprocess.run(['conda', '--version'])
+    except:
+        subprocess.run(['conda', 'install', 'git', '-y'])
+
+    print("\nInstalling Whisper from OpenAI\n")
+    subprocess.run(['pip', 'install', 'git+https://github.com/openai/whisper.git'])
+    subprocess.run(['pip', 'install', '--upgrade', '--no-deps', '--force-reinstall', 'git+https://github.com/openai/whisper.git'])
+
+    print("\nUpgrading PyTorch...")
+    subprocess.run(['pip', 'install', 'torch', 'torchvision', 'torchaudio', '--index-url', 'https://download.pytorch.org/whl/cu118'])
+    
+    print("\nSetup Complete, Creating Directory")
+    # Create the directories if they don't exist
+    if not os.path.exists('Input-Videos'):
+        os.mkdir('Input-Videos')
+
+    print("\nDownload Complete: Follow Instructions with CUDA for your system.")
+    print("\nPlease 'Restart' computer for changes to be saved once CUDA has finished installing.")
+
+def mac_install():
+    print("System detected: Mac OS")
+
+def linux_install():
+    print("System detected: Linux")
 
 def download_and_install_cuda_w(url: str, filename: str, download_dir: str) -> None:
     """Downloads CUDA installer from the specified URL to the given directory,
@@ -57,53 +93,18 @@ def get_os_variable():
 
 if __name__ == "__main__":
 
-    # Example usage
     os_variable = get_os_variable()
     print(os_variable)
 
+    if os_variable.startswith('w_'):
+        print("The system is running Windows.")
+        windows_install()
 
-    if os_variable == 'w':
-        print("\nRunning Blanket Install for Windows 10\n")
+    elif os_variable.startswith('m_'):
+        print("The system is running macOS.")
 
-        try:
-            print("Testing Cuda Availability")
-            subprocess.run(['nvidia-smi'])
-        except:
-            print("Cuda Not Installed")
-        
-        """Cuda 11.8 Installation"""
-        print("\nAttempting to install Cuda 11.8")
-        download_dir = os.getcwd()  # Use the current working directory or specify another
-        filename = "cuda_11.8.0_522.06_windows.exe"
-        url = "https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_522.06_windows.exe"
-        download_and_install_cuda_w(url, filename, download_dir)
-
-        try:
-            print("Conda Version:\n")
-            subprocess.run(["conda", "--version"])
-        except:
-            print("Conda Not Installed\n Run windows_setup.bat as Admin")
-        
-        print("Testing for git")
-        try:
-            subprocess.run(['conda', '--version'])
-        except:
-            subprocess.run(['conda', 'install', 'git', '-y'])
-
-        print("\nInstalling Whisper from OpenAI\n")
-        subprocess.run(['pip', 'install', 'git+https://github.com/openai/whisper.git'])
-        subprocess.run(['pip', 'install', '--upgrade', '--no-deps', '--force-reinstall', 'git+https://github.com/openai/whisper.git'])
-
-        print("\nUpgrading PyTorch...")
-        subprocess.run(['pip', 'install', 'torch', 'torchvision', 'torchaudio', '--index-url', 'https://download.pytorch.org/whl/cu118'])
-        
-        print("\nSetup Complete, Creating Directory")
-        # Create the directories if they don't exist
-        if not os.path.exists('Input-Videos'):
-            os.mkdir('Input-Videos')
-
-        print("\nDownload Complete: Follow Instructions with CUDA for your system.")
-        print("\nPlease 'Restart' computer for changes to be saved once CUDA has finished installing.")
-    
+    elif os_variable.startswith('l_'):
+        print("The system is running Linux.")
     else:
-        print("Mac Selection")
+        print("The operating system is unknown or not supported.")
+
