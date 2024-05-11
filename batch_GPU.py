@@ -4,6 +4,11 @@ import subprocess
 import concurrent.futures
 import pynvml
 import queue
+import threading
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def get_gpu_memory_info():
     pynvml.nvmlInit()
@@ -12,11 +17,11 @@ def get_gpu_memory_info():
     pynvml.nvmlShutdown()
     return info.total, info.free
 
-def process_file(file_to_process, video_folder_name):
+def process_file(file_to_process, video_folder_name, lock):
     try:
         # Move the file to the processing directory
         shutil.move(os.path.join('Input-Videos', file_to_process), file_to_process)
-        print(f"Processing file: {file_to_process}")
+        logging.info(f"Started processing file: {file_to_process}")
 
         # Run Processing
         subprocess.run(f'whisper "{file_to_process}" --device cuda --model large --language en --task transcribe --output_format all', shell=True)
@@ -34,15 +39,18 @@ def process_file(file_to_process, video_folder_name):
             if filename.startswith(output_file_base):
                 shutil.move(filename, new_folder_path)
 
-    except Exception as e:
-        print(f"Processing failed with error: {e}")
-        print("Reversing the file operations...")
-        if os.path.exists(os.path.join('Videos', video_folder_name, file_to_process)):
-            shutil.move(os.path.join('Videos', video_folder_name, file_to_process), '.')
-        if os.path.exists(os.path.join('Videos', video_folder_name)):
-            shutil.rmtree(os.path.join('Videos', video_folder_name))
+        logging.info(f"Completed processing file: {file_to_process}")
 
-def worker(file_queue):
+    except Exception as e:
+        logging.error(f"Processing failed for file {file_to_process} with error: {e}")
+        logging.info("Reversing the file operations...")
+        with lock:
+            if os.path.exists(os.path.join('Videos', video_folder_name, file_to_process)):
+                shutil.move(os.path.join('Videos', video_folder_name, file_to_process), '.')
+            if os.path.exists(os.path.join('Videos', video_folder_name)):
+                shutil.rmtree(os.path.join('Videos', video_folder_name))
+
+def worker(file_queue, lock):
     while not file_queue.empty():
         try:
             file_to_process = file_queue.get_nowait()
@@ -50,7 +58,7 @@ def worker(file_queue):
             break
 
         video_folder_name = f'Video - {file_to_process[1]}'
-        process_file(file_to_process[0], video_folder_name)
+        process_file(file_to_process[0], video_folder_name, lock)
         file_queue.task_done()
 
 def process_files_LMT2_batch():
@@ -60,14 +68,14 @@ def process_files_LMT2_batch():
 
     input_dir = 'Input-Videos'
     files_to_process = os.listdir(input_dir)
-    num_files = len(files_to_process)
 
     file_queue = queue.Queue()
     for i, file_to_process in enumerate(files_to_process, 1):
         file_queue.put((file_to_process, i))
 
+    lock = threading.Lock()
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_processes) as executor:
-        futures = [executor.submit(worker, file_queue) for _ in range(max_processes)]
+        futures = [executor.submit(worker, file_queue, lock) for _ in range(max_processes)]
         concurrent.futures.wait(futures)
 
 def cleanup_filenames():
