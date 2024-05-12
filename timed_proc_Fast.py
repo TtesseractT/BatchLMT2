@@ -46,7 +46,7 @@ def process_file(file_to_process, video_folder_name):
             shutil.move(os.path.join('Videos', video_folder_name, file_to_process), '.')
         if os.path.exists(os.path.join('Videos', video_folder_name)):
             shutil.rmtree(os.path.join('Videos', video_folder_name))
-        move_and_clear_videos()
+        #move_and_clear_videos()
 
 def worker(file_queue):
     while not file_queue.empty():
