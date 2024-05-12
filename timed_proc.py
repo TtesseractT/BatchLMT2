@@ -6,7 +6,8 @@ import pynvml
 import queue
 import signal
 import sys
-import time  # Import the time module
+import time
+
 
 def get_gpu_memory_info():
     pynvml.nvmlInit()
