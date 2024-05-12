@@ -2,6 +2,8 @@ import json
 import argparse
 
 def format_seconds(seconds):
+    if seconds is None:
+        return "00:00:00,000"
     whole_seconds = int(seconds)
     milliseconds = int((seconds - whole_seconds) * 1000)
 
@@ -18,7 +20,10 @@ def convert_to_srt(input_path, output_path, verbose):
     rst_string = ''
     for index, chunk in enumerate(data['chunks'], 1):
         text = chunk['text']
-        start, end = chunk['timestamp'][0], chunk['timestamp'][1]
+        start, end = chunk.get('timestamp', [None, None])
+        if start is None or end is None:
+            print(f"Warning: Chunk {index} has missing timestamps. Skipping...")
+            continue
         start_format, end_format = format_seconds(start), format_seconds(end)
         srt_entry = f"{index}\n{start_format} --> {end_format}\n{text}\n\n"
 
