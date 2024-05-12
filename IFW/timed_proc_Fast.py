@@ -22,7 +22,13 @@ def process_file(file_to_process, video_folder_name):
         shutil.move(os.path.join('Input-Videos', file_to_process), file_to_process)
         print(f"Processing file: {file_to_process}")
 
-        subprocess.run(f'insanely-fast-whisper "{file_to_process}" --model-name openai/whisper-large-v3 --flash True --task transcribe --language en --device-id 0')
+        subprocess.run(f'insanely-fast-whisper --file"{file_to_process}" --model-name openai/whisper-large-v3 --flash True --task transcribe --language en --device-id 0')
+
+        """
+        This worked
+        insanely-fast-whisper --file-name 'A Glimpse of the Sun [4K] [7csv-HqRZXs].mp4' --model-name openai/whisper-large-v3 --task transcribe --language en
+--device-id 0 --transcript-path Sun.srt
+        """
         # Run Processing
         #subprocess.run(f'whisper "{file_to_process}" --device cuda --model large-v2 --language en --task transcribe --fp16 False --output_format all', shell=True)
 
