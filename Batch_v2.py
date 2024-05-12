@@ -4,8 +4,8 @@ import subprocess
 import concurrent.futures
 import pynvml
 import queue
-import torch
-from faster_whisper import WhisperModel
+import signal
+import sys
 
 def get_gpu_memory_info():
     pynvml.nvmlInit()
@@ -55,7 +55,7 @@ def worker(file_queue, model):
 
 def process_files_LMT2_batch():
     total_memory, free_memory = get_gpu_memory_info()
-    vram_per_process = 11 * 1024**3  # Convert 11.7 GB to bytes
+    vram_per_process = 11.7 * 1024**3  # Convert 11.7 GB to bytes
     max_processes = int(free_memory // vram_per_process)
 
     input_dir = 'Input-Videos'
@@ -84,6 +84,22 @@ def cleanup_filenames():
                 new_name = os.path.splitext(largest_file)[0]
                 os.rename(subdir_path, os.path.join(videos_folder, new_name))
 
+def cleanup_on_exit(signum, frame):
+    print("Cleanup initiated...")
+    videos_folder = "./Videos"
+    input_folder = "./Input-Videos"
+
+    for root, dirs, files in os.walk(videos_folder):
+        for file in files:
+            file_path = os.path.join(root, file)
+            if file.endswith('.mp4'):
+                shutil.move(file_path, os.path.join(input_folder, file))
+            elif file.endswith(('.json', '.srt', '.tsv', '.txt', '.vtt')):
+                os.remove(file_path)
+    print("Cleanup completed.")
+    sys.exit(0)
+
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, cleanup_on_exit)
     process_files_LMT2_batch()
     cleanup_filenames()
