@@ -7,6 +7,7 @@ import queue
 from tqdm import tqdm
 import json
 import threading
+import time
 
 LOG_FILE = 'processing_log.json'
 INPUT_DIR = 'Input-Videos'
@@ -17,6 +18,8 @@ if not os.path.exists(LOG_FILE):
     with open(LOG_FILE, 'w') as f:
         json.dump({"queue": [], "processed": []}, f)
 
+log_lock = threading.Lock()
+
 def get_gpu_memory_info():
     pynvml.nvmlInit()
     handle = pynvml.nvmlDeviceGetHandleByIndex(0)
@@ -25,7 +28,7 @@ def get_gpu_memory_info():
     return info.total, info.free
 
 def update_log(action, file_name=None):
-    with threading.Lock():
+    with log_lock:
         with open(LOG_FILE, 'r') as f:
             log_data = json.load(f)
         if action == 'enqueue':
@@ -36,7 +39,7 @@ def update_log(action, file_name=None):
         with open(LOG_FILE, 'w') as f:
             json.dump(log_data, f)
 
-def process_file(file_to_process, video_folder_name, progress_bar):
+def process_file(file_to_process, video_folder_name):
     try:
         shutil.move(os.path.join(INPUT_DIR, file_to_process), file_to_process)
         
@@ -61,10 +64,8 @@ def process_file(file_to_process, video_folder_name, progress_bar):
             shutil.move(os.path.join(OUTPUT_DIR, video_folder_name, file_to_process), '.')
         if os.path.exists(os.path.join(OUTPUT_DIR, video_folder_name)):
             shutil.rmtree(os.path.join(OUTPUT_DIR, video_folder_name))
-    finally:
-        progress_bar.update(1)
 
-def worker(file_queue, progress_bar):
+def worker(file_queue):
     while not file_queue.empty():
         try:
             file_to_process = file_queue.get_nowait()
@@ -72,7 +73,7 @@ def worker(file_queue, progress_bar):
             break
 
         video_folder_name = f'Video - {file_to_process[1]}'
-        process_file(file_to_process[0], video_folder_name, progress_bar)
+        process_file(file_to_process[0], video_folder_name)
         file_queue.task_done()
 
 def process_files_LMT2_batch():
@@ -88,10 +89,9 @@ def process_files_LMT2_batch():
         file_queue.put((file_to_process, i))
         update_log('enqueue', file_to_process)
 
-    with tqdm(total=num_files, desc="Transcribing files") as progress_bar:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_processes) as executor:
-            futures = [executor.submit(worker, file_queue, progress_bar) for _ in range(max_processes)]
-            concurrent.futures.wait(futures)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_processes) as executor:
+        futures = [executor.submit(worker, file_queue) for _ in range(max_processes)]
+        concurrent.futures.wait(futures)
 
 def cleanup_filenames():
     for subdir in os.listdir(OUTPUT_DIR):
@@ -113,9 +113,8 @@ def run_multiple_instances(num_scripts, script_name):
         process.wait()
 
 if __name__ == '__main__':
-    # Determine how many instances to run based on available VRAM
     total_memory, free_memory = get_gpu_memory_info()
-    vram_per_process = 11.7 * 1024**3
+    vram_per_process = 11 * 1024**3
     num_instances = int(free_memory // vram_per_process)
 
     script_name = os.path.basename(__file__)
@@ -124,4 +123,22 @@ if __name__ == '__main__':
         process_files_LMT2_batch()
         cleanup_filenames()
     else:
+        # Calculate total files to process
+        total_files = len(os.listdir(INPUT_DIR))
+
+        # Launch subprocesses
         run_multiple_instances(num_instances, script_name)
+
+        # Monitor progress
+        with tqdm(total=total_files, desc="Transcribing files") as progress_bar:
+            while True:
+                with log_lock:
+                    with open(LOG_FILE, 'r') as f:
+                        log_data = json.load(f)
+                    processed_files = len(log_data['processed'])
+                progress_bar.n = processed_files
+                progress_bar.refresh()
+
+                if processed_files >= total_files:
+                    break
+                time.sleep(1)
