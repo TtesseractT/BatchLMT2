@@ -7,7 +7,7 @@ import queue
 from tqdm import tqdm
 import json
 import threading
-import time
+import multiprocessing as mp
 
 LOG_FILE = 'processing_log.json'
 INPUT_DIR = 'Input-Videos'
@@ -39,7 +39,7 @@ def update_log(action, file_name=None):
         with open(LOG_FILE, 'w') as f:
             json.dump(log_data, f)
 
-def process_file(file_to_process, video_folder_name):
+def process_file(file_to_process, video_folder_name, progress_queue):
     try:
         shutil.move(os.path.join(INPUT_DIR, file_to_process), file_to_process)
         
@@ -58,6 +58,7 @@ def process_file(file_to_process, video_folder_name):
                 shutil.move(filename, new_folder_path)
 
         update_log('dequeue', file_to_process)
+        progress_queue.put(1)  # Signal completion
 
     except Exception as e:
         if os.path.exists(os.path.join(OUTPUT_DIR, video_folder_name, file_to_process)):
@@ -65,7 +66,7 @@ def process_file(file_to_process, video_folder_name):
         if os.path.exists(os.path.join(OUTPUT_DIR, video_folder_name)):
             shutil.rmtree(os.path.join(OUTPUT_DIR, video_folder_name))
 
-def worker(file_queue):
+def worker(file_queue, progress_queue):
     while not file_queue.empty():
         try:
             file_to_process = file_queue.get_nowait()
@@ -73,10 +74,10 @@ def worker(file_queue):
             break
 
         video_folder_name = f'Video - {file_to_process[1]}'
-        process_file(file_to_process[0], video_folder_name)
+        process_file(file_to_process[0], video_folder_name, progress_queue)
         file_queue.task_done()
 
-def process_files_LMT2_batch():
+def process_files_LMT2_batch(progress_queue):
     total_memory, free_memory = get_gpu_memory_info()
     vram_per_process = 11.7 * 1024**3
     max_processes = int(free_memory // vram_per_process)
@@ -90,7 +91,7 @@ def process_files_LMT2_batch():
         update_log('enqueue', file_to_process)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_processes) as executor:
-        futures = [executor.submit(worker, file_queue) for _ in range(max_processes)]
+        futures = [executor.submit(worker, file_queue, progress_queue) for _ in range(max_processes)]
         concurrent.futures.wait(futures)
 
 def cleanup_filenames():
@@ -105,9 +106,20 @@ def cleanup_filenames():
 
 def run_multiple_instances(num_scripts, script_name):
     processes = []
+    progress_queue = mp.Queue()
+
     for _ in range(num_scripts):
         process = subprocess.Popen(["python", script_name], env={**os.environ, "RUN_AS_SUBPROCESS": "1"}, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         processes.append(process)
+
+    total_files = len(os.listdir(INPUT_DIR))
+
+    with tqdm(total=total_files, desc="Transcribing files") as progress_bar:
+        processed_count = 0
+        while processed_count < total_files:
+            progress_queue.get()  # Wait for a signal from a subprocess
+            processed_count += 1
+            progress_bar.update(1)
 
     for process in processes:
         process.wait()
@@ -120,25 +132,8 @@ if __name__ == '__main__':
     script_name = os.path.basename(__file__)
 
     if os.getenv('RUN_AS_SUBPROCESS') == '1':
-        process_files_LMT2_batch()
+        progress_queue = mp.Queue()
+        process_files_LMT2_batch(progress_queue)
         cleanup_filenames()
     else:
-        # Calculate total files to process
-        total_files = len(os.listdir(INPUT_DIR))
-
-        # Launch subprocesses
         run_multiple_instances(num_instances, script_name)
-
-        # Monitor progress
-        with tqdm(total=total_files, desc="Transcribing files") as progress_bar:
-            while True:
-                with log_lock:
-                    with open(LOG_FILE, 'r') as f:
-                        log_data = json.load(f)
-                    processed_files = len(log_data['processed'])
-                progress_bar.n = processed_files
-                progress_bar.refresh()
-
-                if processed_files >= total_files:
-                    break
-                time.sleep(1)
