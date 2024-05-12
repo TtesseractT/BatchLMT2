@@ -45,7 +45,7 @@ def process_file(file_to_process, video_folder_name, progress_queue):
         
         # Run Whisper processing
         cmd = f'whisper "{file_to_process}" --device cuda --model large-v2 --language en --task transcribe --output_format all'
-        subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        subprocess.run(cmd, shell=True)
         
         new_folder_path = os.path.join(OUTPUT_DIR, video_folder_name)
         os.mkdir(new_folder_path)
