@@ -44,7 +44,7 @@ def process_file(file_to_process, video_folder_name):
         shutil.move(os.path.join(INPUT_DIR, file_to_process), file_to_process)
         
         # Run Whisper processing
-        cmd = f'whisper "{file_to_process}" --device cuda --model large --language en --task transcribe --output_format all'
+        cmd = f'whisper "{file_to_process}" --device cuda --model large-v2 --language en --task transcribe --output_format all'
         subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         
         new_folder_path = os.path.join(OUTPUT_DIR, video_folder_name)
