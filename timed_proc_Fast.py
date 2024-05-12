@@ -142,3 +142,4 @@ if __name__ == '__main__':
         print(f"Script completed in {elapsed_time:.2f} seconds")
     except Exception as e:
         #move_and_clear_videos() # Basic cleanup on error 
+        pass
