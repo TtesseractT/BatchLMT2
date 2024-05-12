@@ -79,7 +79,7 @@ def worker(file_queue, progress_queue):
 
 def process_files_LMT2_batch(progress_queue):
     total_memory, free_memory = get_gpu_memory_info()
-    vram_per_process = 11.7 * 1024**3
+    vram_per_process = 10.5 * 1024**3
     max_processes = int(free_memory // vram_per_process)
 
     files_to_process = os.listdir(INPUT_DIR)
