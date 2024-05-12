@@ -42,6 +42,7 @@ def process_file(file_to_process, video_folder_name):
             shutil.move(os.path.join('Videos', video_folder_name, file_to_process), '.')
         if os.path.exists(os.path.join('Videos', video_folder_name)):
             shutil.rmtree(os.path.join('Videos', video_folder_name))
+        move_and_clear_videos()
 
 def worker(file_queue):
     while not file_queue.empty():
@@ -83,30 +84,59 @@ def cleanup_filenames():
                 new_name = os.path.splitext(largest_file)[0]
                 os.rename(subdir_path, os.path.join(videos_folder, new_name))
 
-def cleanup_on_exit(signum, frame):
-    print("Cleanup initiated...")
-    videos_folder = "./Videos"
-    input_folder = "./Input-Videos"
+def move_and_clear_videos():
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    target_directory = os.path.join(current_directory, 'Input-Videos')
+    videos_directory = os.path.join(current_directory, 'Videos')
+    extensions_to_remove = ['.json', '.srt', '.tsv', '.txt', '.vtt']
 
-    for root, dirs, files in os.walk(videos_folder):
+    # Create 'Input-Videos' directory if it doesn't exist
+    if not os.path.exists(target_directory):
+        os.makedirs(target_directory)
+
+    # Find and move all .mp4 files
+    for root, dirs, files in os.walk(current_directory):
         for file in files:
-            file_path = os.path.join(root, file)
             if file.endswith('.mp4'):
-                shutil.move(file_path, os.path.join(input_folder, file))
-            elif file.endswith(('.json', '.srt', '.tsv', '.txt', '.vtt')):
+                source_path = os.path.join(root, file)
+                destination_path = os.path.join(target_directory, file)
+                print(f"Moving {source_path} to {destination_path}")
+                shutil.move(source_path, destination_path)
+        
+        # Only process the top directory (current directory)
+        break
+
+    # Remove specified files in the current directory
+    for file in os.listdir(current_directory):
+        if any(file.endswith(ext) for ext in extensions_to_remove):
+            file_path = os.path.join(current_directory, file)
+            print(f"Removing file {file_path}")
+            os.remove(file_path)
+
+    # Clear the 'Videos' directory
+    if os.path.exists(videos_directory):
+        for root, dirs, files in os.walk(videos_directory, topdown=False):
+            for file in files:
+                file_path = os.path.join(root, file)
+                print(f"Removing file {file_path}")
                 os.remove(file_path)
-    print("Cleanup completed.")
-    sys.exit(0)
+            for dir in dirs:
+                dir_path = os.path.join(root, dir)
+                print(f"Removing directory {dir_path}")
+                os.rmdir(dir_path)
+        os.rmdir(videos_directory)  # Remove the 'Videos' directory itself
+
 
 if __name__ == '__main__':
-    signal.signal(signal.SIGINT, cleanup_on_exit)
-    
-    start_time = time.time()  # Record the start time
-    
-    process_files_LMT2_batch()
-    cleanup_filenames()
-    
-    end_time = time.time()  # Record the end time
-    elapsed_time = end_time - start_time  # Calculate the elapsed time
-    
-    print(f"Script completed in {elapsed_time:.2f} seconds")
+    try:
+        start_time = time.time()  # Record the start time
+        
+        process_files_LMT2_batch()
+        cleanup_filenames()
+        
+        end_time = time.time()  # Record the end time
+        elapsed_time = end_time - start_time  # Calculate the elapsed time
+        
+        print(f"Script completed in {elapsed_time:.2f} seconds")
+    except Exception as e:
+        move_and_clear_videos() # Basic cleanup on error 
