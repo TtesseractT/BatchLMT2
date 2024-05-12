@@ -4,6 +4,8 @@ import subprocess
 import concurrent.futures
 import pynvml
 import queue
+import torch
+from faster_whisper import WhisperModel
 
 def get_gpu_memory_info():
     pynvml.nvmlInit()
@@ -12,49 +14,25 @@ def get_gpu_memory_info():
     pynvml.nvmlShutdown()
     return info.total, info.free
 
-def transcribe_audio(file_to_process):
-    import torch
-    from transformers import WhisperProcessor, WhisperForConditionalGeneration
-
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-    # Load model and processor
-    model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-large-v2").to(device)
-    processor = WhisperProcessor.from_pretrained("openai/whisper-large-v2")
-
-    # Prepare inputs
-    inputs = processor(file_to_process, return_tensors="pt").to(device)
-
-    # Perform mixed precision inference
-    with torch.cuda.amp.autocast():
-        with torch.no_grad():
-            generated_ids = model.generate(inputs.input_ids)
-
-    # Decode the transcription
-    transcription = processor.batch_decode(generated_ids, skip_special_tokens=True)
-    return transcription
-
-def process_file(file_to_process, video_folder_name):
+def process_file(file_to_process, video_folder_name, model):
     try:
         # Move the file to the processing directory
         shutil.move(os.path.join('Input-Videos', file_to_process), file_to_process)
         print(f"Processing file: {file_to_process}")
 
         # Run Processing
-        transcription = transcribe_audio(file_to_process)
-        print(f"Transcription: {transcription}")
+        result = model.transcribe(file_to_process)
+        output_file = f"{os.path.splitext(file_to_process)[0]}.txt"
+        with open(output_file, "w") as f:
+            f.write(result["text"])
 
         # Create a new directory for the processed video and move all related files
         new_folder_path = os.path.join('Videos', video_folder_name)
         os.mkdir(new_folder_path)
 
-        # Move the original file
+        # Move the original file and the output file
         shutil.move(file_to_process, new_folder_path)
-
-        # Save transcription to a file
-        output_file_base = os.path.splitext(file_to_process)[0]
-        with open(os.path.join(new_folder_path, f"{output_file_base}.txt"), 'w') as f:
-            f.write(transcription[0])
+        shutil.move(output_file, new_folder_path)
 
     except Exception as e:
         print(f"Processing failed with error: {e}")
@@ -64,7 +42,7 @@ def process_file(file_to_process, video_folder_name):
         if os.path.exists(os.path.join('Videos', video_folder_name)):
             shutil.rmtree(os.path.join('Videos', video_folder_name))
 
-def worker(file_queue):
+def worker(file_queue, model):
     while not file_queue.empty():
         try:
             file_to_process = file_queue.get_nowait()
@@ -72,7 +50,7 @@ def worker(file_queue):
             break
 
         video_folder_name = f'Video - {file_to_process[1]}'
-        process_file(file_to_process[0], video_folder_name)
+        process_file(file_to_process[0], video_folder_name, model)
         file_queue.task_done()
 
 def process_files_LMT2_batch():
@@ -88,8 +66,10 @@ def process_files_LMT2_batch():
     for i, file_to_process in enumerate(files_to_process, 1):
         file_queue.put((file_to_process, i))
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=max_processes) as executor:
-        futures = [executor.submit(worker, file_queue) for _ in range(max_processes)]
+    model = WhisperModel("large-v2", device="cuda", compute_type="int8_float16")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_processes) as executor:
+        futures = [executor.submit(worker, file_queue, model) for _ in range(max_processes)]
         concurrent.futures.wait(futures)
 
 def cleanup_filenames():
