@@ -23,7 +23,7 @@ def process_file(file_to_process, video_folder_name):
         print(f"Processing file: {file_to_process}")
         filenamestatic = os.path.splitext(file_to_process)[0]
 
-        subprocess.run(f"insanely-fast-whisper --file-name '{file_to_process}' --model-name openai/whisper-large-v3 --task transcribe --language en --device-id 0")
+        subprocess.run(f'insanely-fast-whisper --file-name {file_to_process} --model-name openai/whisper-large-v3 --task transcribe --language en --device-id 0 --transcript-path {filenamestatic}.json', shell=True)
 
         # Run Processing
         #subprocess.run(f'whisper "{file_to_process}" --device cuda --model large-v2 --language en --task transcribe --fp16 False --output_format all', shell=True)
@@ -46,7 +46,7 @@ def process_file(file_to_process, video_folder_name):
             shutil.move(os.path.join('Videos', video_folder_name, file_to_process), '.')
         if os.path.exists(os.path.join('Videos', video_folder_name)):
             shutil.rmtree(os.path.join('Videos', video_folder_name))
-        #move_and_clear_videos()
+        move_and_clear_videos()
 
 def worker(file_queue):
     while not file_queue.empty():
@@ -143,4 +143,4 @@ if __name__ == '__main__':
         
         print(f"Script completed in {elapsed_time:.2f} seconds")
     except Exception as e:
-        pass #move_and_clear_videos() # Basic cleanup on error 
+        move_and_clear_videos() # Basic cleanup on error 
