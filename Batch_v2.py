@@ -14,25 +14,25 @@ def get_gpu_memory_info():
     pynvml.nvmlShutdown()
     return info.total, info.free
 
-def process_file(file_to_process, video_folder_name, model):
+def process_file(file_to_process, video_folder_name):
     try:
         # Move the file to the processing directory
         shutil.move(os.path.join('Input-Videos', file_to_process), file_to_process)
         print(f"Processing file: {file_to_process}")
 
         # Run Processing
-        result = model.transcribe(file_to_process)
-        output_file = f"{os.path.splitext(file_to_process)[0]}.txt"
-        with open(output_file, "w") as f:
-            f.write(result["text"])
+        subprocess.run(f'whisper "{file_to_process}" --device cuda --model large-v2 --language en --task transcribe --fp16 True --output_format all', shell=True)
 
         # Create a new directory for the processed video and move all related files
         new_folder_path = os.path.join('Videos', video_folder_name)
         os.mkdir(new_folder_path)
 
-        # Move the original file and the output file
+        # Move the original file and all related output files
         shutil.move(file_to_process, new_folder_path)
-        shutil.move(output_file, new_folder_path)
+        output_file_base = os.path.splitext(file_to_process)[0]
+        for filename in os.listdir('.'):
+            if filename.startswith(output_file_base):
+                shutil.move(filename, new_folder_path)
 
     except Exception as e:
         print(f"Processing failed with error: {e}")
@@ -42,7 +42,7 @@ def process_file(file_to_process, video_folder_name, model):
         if os.path.exists(os.path.join('Videos', video_folder_name)):
             shutil.rmtree(os.path.join('Videos', video_folder_name))
 
-def worker(file_queue, model):
+def worker(file_queue):
     while not file_queue.empty():
         try:
             file_to_process = file_queue.get_nowait()
@@ -50,12 +50,12 @@ def worker(file_queue, model):
             break
 
         video_folder_name = f'Video - {file_to_process[1]}'
-        process_file(file_to_process[0], video_folder_name, model)
+        process_file(file_to_process[0], video_folder_name)
         file_queue.task_done()
 
 def process_files_LMT2_batch():
     total_memory, free_memory = get_gpu_memory_info()
-    vram_per_process = 11.7 * 1024**3  # Convert 11.7 GB to bytes
+    vram_per_process = 11 * 1024**3  # Convert 11.7 GB to bytes
     max_processes = int(free_memory // vram_per_process)
 
     input_dir = 'Input-Videos'
@@ -66,10 +66,8 @@ def process_files_LMT2_batch():
     for i, file_to_process in enumerate(files_to_process, 1):
         file_queue.put((file_to_process, i))
 
-    model = WhisperModel("large-v2", device="cuda", compute_type="int8_float16")
-
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_processes) as executor:
-        futures = [executor.submit(worker, file_queue, model) for _ in range(max_processes)]
+        futures = [executor.submit(worker, file_queue) for _ in range(max_processes)]
         concurrent.futures.wait(futures)
 
 def cleanup_filenames():
