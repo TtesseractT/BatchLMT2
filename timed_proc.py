@@ -23,7 +23,7 @@ def process_file(file_to_process, video_folder_name):
         print(f"Processing file: {file_to_process}")
 
         # Run Processing
-        subprocess.run(f'whisper "{file_to_process}" --device cuda --model large-v3 --language en --task transcribe --fp16 True --output_format all', shell=True)
+        subprocess.run(f'whisper "{file_to_process}" --device cuda --model large-v2 --language en --task transcribe --fp16 True --output_format all', shell=True)
 
         # Create a new directory for the processed video and move all related files
         new_folder_path = os.path.join('Videos', video_folder_name)
