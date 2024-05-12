@@ -23,7 +23,7 @@ def process_file(file_to_process, video_folder_name):
         print(f"Processing file: {file_to_process}")
         filenamestatic = os.path.splitext(file_to_process)[0]
 
-        subprocess.run(f'insanely-fast-whisper --file-name "{file_to_process}" --model-name openai/whisper-large-v3 --task transcribe --language en --device-id 0')
+        subprocess.run(f'insanely-fast-whisper --file-name', '{file_to_process}', '--model-name openai/whisper-large-v3 --task transcribe --language en --device-id 0')
 
         # Run Processing
         #subprocess.run(f'whisper "{file_to_process}" --device cuda --model large-v2 --language en --task transcribe --fp16 False --output_format all', shell=True)
