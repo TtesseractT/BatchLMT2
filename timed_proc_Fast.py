@@ -1,14 +1,14 @@
-import os
-import shutil
-import subprocess
 import concurrent.futures
+import subprocess
+import argparse
+import shutil
 import pynvml
-import queue
 import signal
-import sys
+import queue
 import time
 import json
-import argparse
+import sys
+import os
 
 
 def get_gpu_memory_info():
