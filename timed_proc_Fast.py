@@ -12,6 +12,20 @@ import argparse
 
 
 def get_gpu_memory_info():
+    """
+    Retrieves the total and free GPU memory information.
+
+    This function initializes the NVIDIA Management Library (NVML), gets the memory
+    information for the first GPU device (index 0), and then shuts down NVML.
+
+    Returns:
+        tuple: A tuple containing:
+            - total (int): The total memory of the GPU in bytes.
+            - free (int): The free memory of the GPU in bytes.
+
+    Raises:
+        pynvml.NVMLError: If there is an issue with NVML initialization or querying the GPU memory info.
+    """
     pynvml.nvmlInit()
     handle = pynvml.nvmlDeviceGetHandleByIndex(0)
     info = pynvml.nvmlDeviceGetMemoryInfo(handle)
@@ -19,6 +33,18 @@ def get_gpu_memory_info():
     return info.total, info.free
 
 def process_file(file_to_process, video_folder_name):
+    """
+    Processes a video file by moving it to a processing directory, running a transcription task, 
+    and then organizing the processed files into a new directory.
+
+    Args:
+        file_to_process (str): The name of the file to be processed.
+        video_folder_name (str): The name of the folder to store the processed video and related files.
+
+    Raises:
+        Exception: If there is any issue during the file processing, it will print an error message 
+                  and attempt to reverse any file operations.
+    """
     try:
         # Move the file to the processing directory
         shutil.move(os.path.join('Input-Videos', file_to_process), file_to_process)
@@ -49,6 +75,19 @@ def process_file(file_to_process, video_folder_name):
         move_and_clear_videos()
 
 def worker(file_queue):
+    """
+    Worker function to process files from a queue.
+
+    Continuously retrieves files from the queue and processes them until the queue is empty.
+
+    Args:
+        file_queue (queue.Queue): A queue containing files to be processed. Each item in the queue
+                                  should be a tuple where the first element is the file name and 
+                                  the second element is an identifier used to create a folder name.
+    
+    Raises:
+        queue.Empty: If the queue is empty when attempting to retrieve a file, the function breaks the loop.
+    """
     while not file_queue.empty():
         try:
             file_to_process = file_queue.get_nowait()
@@ -60,8 +99,18 @@ def worker(file_queue):
         file_queue.task_done()
 
 def process_files_LMT2_batch():
+    """
+    Processes video files in batches, utilizing available GPU memory to determine the number of concurrent processes.
+
+    This function retrieves the total and free GPU memory, calculates the maximum number of processes that can 
+    run concurrently based on the VRAM per process, and then processes files from the 'Input-Videos' directory 
+    using a thread pool executor.
+
+    Raises:
+        Exception: If there is an issue with retrieving GPU memory info or processing files, it will print an error message.
+    """
     total_memory, free_memory = get_gpu_memory_info()
-    vram_per_process = 11 * 1024**3  # Convert 11.7 GB to bytes
+    vram_per_process = 11 * 1024**3  # Convert 11 GB to bytes
     max_processes = int(free_memory // vram_per_process)
 
     input_dir = 'Input-Videos'
@@ -77,6 +126,15 @@ def process_files_LMT2_batch():
         concurrent.futures.wait(futures)
 
 def cleanup_filenames():
+    """
+    Renames subdirectories in the 'Videos' folder based on the largest file within each subdirectory.
+
+    This function iterates over all subdirectories in the 'Videos' folder, finds the largest file in each
+    subdirectory, and renames the subdirectory to match the name (without extension) of the largest file.
+
+    Raises:
+        Exception: If there is any issue with reading directories or renaming files, an exception is raised.
+    """
     videos_folder = "./Videos"
 
     for subdir in os.listdir(videos_folder):
@@ -89,6 +147,19 @@ def cleanup_filenames():
                 os.rename(subdir_path, os.path.join(videos_folder, new_name))
 
 def move_and_clear_videos():
+    """
+    Moves all .mp4 files from the current directory to the 'Input-Videos' directory and clears specified file types 
+    and the 'Videos' directory.
+
+    This function performs the following steps:
+    1. Creates the 'Input-Videos' directory if it does not exist.
+    2. Moves all .mp4 files from the current directory to the 'Input-Videos' directory.
+    3. Removes specified file types from the current directory.
+    4. Clears all files and subdirectories within the 'Videos' directory, then removes the 'Videos' directory itself.
+
+    Raises:
+        Exception: If there is any issue with file operations, an exception will be raised.
+    """
     current_directory = os.path.dirname(os.path.abspath(__file__))
     target_directory = os.path.join(current_directory, 'Input-Videos')
     videos_directory = os.path.join(current_directory, 'Videos')
@@ -131,6 +202,17 @@ def move_and_clear_videos():
         os.rmdir(videos_directory)  # Remove the 'Videos' directory itself
 
 def format_seconds(seconds):
+    """
+    Formats a duration given in seconds into a string with the format "HH:MM:SS,mmm".
+
+    If the input is None, returns a default string "00:00:00,000".
+
+    Args:
+        seconds (float or None): The duration in seconds to format. If None, returns the default time string.
+
+    Returns:
+        str: The formatted time string in the format "HH:MM:SS,mmm".
+    """
     if seconds is None:
         return "00:00:00,000"
     whole_seconds = int(seconds)
@@ -143,6 +225,17 @@ def format_seconds(seconds):
     return f"{hours:02d}:{minutes:02d}:{seconds:02d},{milliseconds:03d}"
 
 def convert_to_srt(input_path, output_path, verbose):
+    """
+    Formats a duration given in seconds into a string with the format "HH:MM:SS,mmm".
+
+    If the input is None, returns a default string "00:00:00,000".
+
+    Args:
+        seconds (float or None): The duration in seconds to format. If None, returns the default time string.
+
+    Returns:
+        str: The formatted time string in the format "HH:MM:SS,mmm".
+    """
     with open(input_path, 'r') as file:
         data = json.load(file)
 
@@ -165,6 +258,19 @@ def convert_to_srt(input_path, output_path, verbose):
         file.write(rst_string)
 
 def process_json_files_in_videos(verbose=False):
+    """
+    Processes all JSON files in the 'Videos' directory by converting them to SRT subtitle files.
+
+    This function searches through all subdirectories in the 'Videos' folder, converts each JSON file
+    to an SRT file using the `convert_to_srt` function, and saves the SRT files in the same subdirectory.
+
+    Args:
+        verbose (bool, optional): If True, prints each SRT entry during the conversion process.
+
+    Raises:
+        FileNotFoundError: If the 'Videos' directory does not exist.
+        json.JSONDecodeError: If there is an error decoding the JSON file during conversion.
+    """
     videos_folder = "./Videos"
     
     for subdir in os.listdir(videos_folder):
@@ -191,3 +297,6 @@ if __name__ == '__main__':
         print(f"Script completed in {elapsed_time:.2f} seconds")
     except Exception as e:
         move_and_clear_videos() # Basic cleanup on error
+
+    # Example Useage
+    # python timed_proc_Fast.py
