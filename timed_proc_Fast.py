@@ -7,6 +7,8 @@ import queue
 import signal
 import sys
 import time
+import json
+import argparse
 
 
 def get_gpu_memory_info():
@@ -25,10 +27,7 @@ def process_file(file_to_process, video_folder_name):
         print(filenamestatic)
 
         subprocess.run(f'insanely-fast-whisper --file-name "{file_to_process}" --model-name openai/whisper-large-v3 --task transcribe --language en --device-id 0 --transcript-path "{filenamestatic}".json', shell=True)
-
-        # Run Processing
-        #subprocess.run(f'whisper "{file_to_process}" --device cuda --model large-v2 --language en --task transcribe --fp16 False --output_format all', shell=True)
-
+        
         # Create a new directory for the processed video and move all related files
         new_folder_path = os.path.join('Videos', video_folder_name)
         os.mkdir(new_folder_path)
@@ -131,6 +130,52 @@ def move_and_clear_videos():
                 os.rmdir(dir_path)
         os.rmdir(videos_directory)  # Remove the 'Videos' directory itself
 
+def format_seconds(seconds):
+    if seconds is None:
+        return "00:00:00,000"
+    whole_seconds = int(seconds)
+    milliseconds = int((seconds - whole_seconds) * 1000)
+
+    hours = whole_seconds // 3600
+    minutes = (whole_seconds % 3600) // 60
+    seconds = whole_seconds % 60
+
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d},{milliseconds:03d}"
+
+def convert_to_srt(input_path, output_path, verbose):
+    with open(input_path, 'r') as file:
+        data = json.load(file)
+
+    rst_string = ''
+    for index, chunk in enumerate(data['chunks'], 1):
+        text = chunk['text']
+        start, end = chunk.get('timestamp', [None, None])
+        if start is None or end is None:
+            print(f"Warning: Chunk {index} has missing timestamps. Skipping...")
+            continue
+        start_format, end_format = format_seconds(start), format_seconds(end)
+        srt_entry = f"{index}\n{start_format} --> {end_format}\n{text}\n\n"
+
+        if verbose:
+            print(srt_entry)
+
+        rst_string += srt_entry
+
+    with open(output_path, 'w', encoding='utf-8') as file:
+        file.write(rst_string)
+
+def process_json_files_in_videos(verbose=False):
+    videos_folder = "./Videos"
+    
+    for subdir in os.listdir(videos_folder):
+        subdir_path = os.path.join(videos_folder, subdir)
+        if os.path.isdir(subdir_path):
+            for file in os.listdir(subdir_path):
+                if file.endswith('.json'):
+                    json_path = os.path.join(subdir_path, file)
+                    srt_path = os.path.join(subdir_path, os.path.splitext(file)[0] + '.srt')
+                    convert_to_srt(json_path, srt_path, verbose)
+                    print(f"Converted {json_path} to {srt_path}")
 
 if __name__ == '__main__':
     try:
@@ -138,10 +183,11 @@ if __name__ == '__main__':
         
         process_files_LMT2_batch()
         cleanup_filenames()
+        process_json_files_in_videos()
         
         end_time = time.time()  # Record the end time
         elapsed_time = end_time - start_time  # Calculate the elapsed time
         
         print(f"Script completed in {elapsed_time:.2f} seconds")
     except Exception as e:
-        move_and_clear_videos() # Basic cleanup on error 
+        move_and_clear_videos() # Basic cleanup on error
